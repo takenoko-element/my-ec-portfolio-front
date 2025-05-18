@@ -20,7 +20,7 @@ export interface ProductsState {
     error: string | null;
 }
 
-const initialState: ProductsState = {
+export const initialState: ProductsState = {
     items: [],
     status: "idle",
     error: null
@@ -83,7 +83,7 @@ const ProductsSlice = createSlice({
                 state.error = action.payload as string || action.error.message || 'Fetch failed';
                 console.log('fetchProducts.rejected: error set, status set to failed', action);
             })
-    }
+    },
 });
 
 // export const { setProducts, startLoadingProducts, productReceived, productsLoadingFailed} = ProductsSlice.actions;

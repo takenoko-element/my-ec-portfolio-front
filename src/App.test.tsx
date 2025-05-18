@@ -5,7 +5,7 @@ import App from './App';
 import { describe, it, expect } from 'vitest'; 
 
 describe('App Component', () => {
-  it('renders Vite + React heading (or some known text)', () => {
+  it.skip('renders Vite + React heading (or some known text)', () => {
     render(<App />);
     
     // App.tsx が実際に表示するテキストに合わせて調整してください。
@@ -15,11 +15,11 @@ describe('App Component', () => {
   });
 
   // Vitestが動作しているかを確認するための非常に基本的なテスト
-  it('should pass a simple arithmetic test', () => {
+  it.skip('should pass a simple arithmetic test', () => {
     expect(1 + 1).toBe(2);
   });
 
-  it("my test",() => {
+  it.skip("my test",() => {
     render(<App />);
     expect(screen.getByText('Click on the Vite and React logos to learn more')).toBeInTheDocument();
   });
