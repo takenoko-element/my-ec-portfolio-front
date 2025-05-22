@@ -14,5 +14,6 @@ export const store = configureStore({
 
 // アプリケーション全体で型安全性を保つために、RootStateとAppDispatchの型をエクスポートします。
 // これらはストア自体から型を推論しています。
+export type AppStore = typeof store;
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

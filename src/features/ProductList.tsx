@@ -22,7 +22,7 @@ export default function ProductList() {
         return <div>ローディング中...</div>
     }
     if(productStatus === "failed") {
-        return <div>エラー：{error}</div>
+        return <div>エラー: {error}</div>
     }
 
     return (
