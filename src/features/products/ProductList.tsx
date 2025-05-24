@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import type { RootState, AppDispatch } from "../app/store";
-import { fetchProducts } from "./products/productSlice";
-import type { Product } from "./products/productSlice";
+import type { RootState, AppDispatch } from "../../app/store";
+import { fetchProducts, type Product} from "./productSlice";
+import { addItemToCart } from "../cart/cartSlice";
 
 export default function ProductList() {
     const dispatch = useDispatch<AppDispatch>();
@@ -18,6 +18,11 @@ export default function ProductList() {
         }
     },[productStatus, dispatch]);
 
+    const handleAddToCart = (product: Product) => {
+        dispatch(addItemToCart(product));
+        console.log(`${product.title}をカートに追加`)
+    };
+
     if(productStatus === "loading"){
         return <div>ローディング中...</div>
     }
@@ -26,7 +31,7 @@ export default function ProductList() {
     }
 
     return (
-        <div>
+        <div style={{paddingTop: "100px"}}>
             <h2>商品リスト</h2>
             {products.length === 0 && productStatus === "succeeded" && <p>商品がありません。</p>}
             <ul>
@@ -35,6 +40,9 @@ export default function ProductList() {
                         <h3>{product.title}</h3>
                         <p>価格：${product.price}</p>
                         <img src={product.image} alt={product.title} style={{ width: '100px', height: '100px', objectFit: 'contain' }} />
+                        <button onClick={() => handleAddToCart(product)}>
+                            カートに追加
+                        </button>
                     </li>
                 ))}
             </ul>

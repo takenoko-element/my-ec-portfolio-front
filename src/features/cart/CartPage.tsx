@@ -1,0 +1,74 @@
+import { useSelector, useDispatch } from "react-redux";
+import type { AppDispatch } from "../../app/store";
+import {
+    selectCartItems,
+    selectCartTotalPrice,
+    removeItemFromCart,
+    updateItemQuantity,
+    clearCart
+} from './cartSlice';
+import type { CartItem } from "./cartSlice";
+import { Link } from "react-router-dom";
+
+export default function CartPage() {
+    const dispatch = useDispatch<AppDispatch>();
+    const cartItems = useSelector(selectCartItems);
+    const totalPrice = useSelector(selectCartTotalPrice);
+
+    const handleRemoveItem = (itemId: number) => {
+        dispatch(removeItemFromCart(itemId));
+    };
+    const handleUpdateItemQuantity = (itemId: number, newQuantity: number) => {
+        if (newQuantity >= 0){
+            dispatch(updateItemQuantity({id: itemId, quantity: newQuantity}));
+        }
+    };
+    const handleClearCart = () => {
+        dispatch(clearCart());
+    };
+
+    if(cartItems.length === 0){
+        return (
+            <div style={{paddingTop: "100px"}}>
+                <h2>ショッピングカート</h2>
+                <p>カートに商品がありません</p>
+                <Link to="/">お買い物を続ける</Link>
+            </div>
+        );
+    }
+
+    return (
+        <div style={{paddingTop: "100px"}}>
+            <h2>ショッピングカート</h2>
+            <ul>
+                {cartItems.map((item: CartItem) => (
+                    <li key={item.id} style={{borderBottom: '1px solid #ccc', marginBottom: '1rem', paddingBottom: '1rem'}}>
+                        <div style={{display: 'flex', alignItems: 'center'}}>
+                            <img src={item.image} alt={item.title} style={{width:'80px', height:'80px', objectFit: 'contain', marginRight: '1rem'}}/>
+                            <div>
+                                <h3>{item.title}</h3>
+                                <p>単価: ${item.price.toFixed(2)}</p>
+                                <div>
+                                    数量:
+                                    <button onClick={() => handleUpdateItemQuantity(item.id, item.quantity-1)} disabled={item.quantity <= 1}>
+                                        -
+                                    </button>
+                                    <span style={{margin: '0 0.5rem' }}>{item.quantity}</span>
+                                    <button onClick={() => handleUpdateItemQuantity(item.id, item.quantity+1)}>
+                                        +
+                                    </button>
+                                </div>
+                                <p>小計: ${(item.price * item.quantity).toFixed(2)}</p>
+                                <button onClick={() => handleRemoveItem(item.id)}>削除</button>
+                            </div>
+                        </div>
+                    </li>
+                ))}
+            </ul>
+            <div style={{marginTop: '2rem', textAlign: 'right'}}>
+                <h3>合計金額: ${totalPrice.toFixed(2)}</h3>
+                <button onClick={handleClearCart} style={{marginRight: '1rem'}}>カートを空にする</button>
+            </div>
+        </div>
+    );
+}

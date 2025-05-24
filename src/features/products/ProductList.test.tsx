@@ -2,7 +2,7 @@
 import { screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach, type MockInstance } from 'vitest';
 import { RenderWithProviders } from '../../utils/test-utils';
-import ProductList from '../ProductList';
+import ProductList from './ProductList';
 import * as productSliceModule from './productSlice';
 import type { Product } from './productSlice';
 
