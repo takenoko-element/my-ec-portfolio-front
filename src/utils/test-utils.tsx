@@ -18,21 +18,28 @@ interface ExtendedRenderOptions extends Omit<RenderOptions, 'queries'> {
 }
 
 export function RenderWithProviders(
-    ui: React.ReactElement,
-    {
-        preloadedState = {}, // {} は Partial<RootState> と互換性があります
-        store = configureStore({
-            reducer: {
-                products: productsReducer as Reducer<ProductsState, UnknownAction, ProductsState | undefined>,
-                cart: cartReducer as Reducer<CartState, UnknownAction, CartState | undefined>,
-            },
-            preloadedState // ここに渡される preloadedState の型が Partial<RootState> になります
-        }),
-        ...renderOptions
-    }: ExtendedRenderOptions = {}
+  ui: React.ReactElement,
+  {
+    preloadedState = {},
+    store = undefined,
+    ...renderOptions
+  }: ExtendedRenderOptions = {}
 ) {
-    function Wrapper({ children }: PropsWithChildren<{}>): JSX.Element {
-        return <Provider store={store}>{children}</Provider>;
-    }
-    return { store, ...render(ui, { wrapper: Wrapper, ...renderOptions }) };
+  // store が未定義なら新しく作る
+  const createdStore = store ?? configureStore({
+    reducer: {
+      products: productsReducer as Reducer<ProductsState, UnknownAction, ProductsState | undefined>,
+      cart: cartReducer as Reducer<CartState, UnknownAction, CartState | undefined>,
+    },
+    preloadedState,
+  });
+
+  function Wrapper({ children }: PropsWithChildren<{}>): JSX.Element {
+    return <Provider store={createdStore}>{children}</Provider>;
+  }
+
+  return {
+    store: createdStore,
+    ...render(ui, { wrapper: Wrapper, ...renderOptions })
+  };
 }
