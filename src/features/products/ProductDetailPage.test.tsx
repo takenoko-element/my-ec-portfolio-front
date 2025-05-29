@@ -1,4 +1,4 @@
-import { screen, waitFor, act, render } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, type MockInstance, beforeEach, afterEach } from 'vitest';
 import { RenderWithProviders } from '../../utils/test-utils';
@@ -6,13 +6,10 @@ import { RenderWithProviders } from '../../utils/test-utils';
 import ProductDetailPage from './productDetailPage';
 import * as productSliceModule from './productSlice';
 import * as cartSlicerModule from '../cart/cartSlice';
-import productsReducer from './productSlice';
-import cartReducer from '../cart/cartSlice';
 import type { Product } from './productSlice';
 import type { RootState } from '../../app/store';
 
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
-import { configureStore } from '@reduxjs/toolkit';
 
 const mockProductBase: Omit<Product, 'id' | 'title' | 'price' | 'category' | 'description' | 'image' | 'rating'> = {
     description: 'mock description',
