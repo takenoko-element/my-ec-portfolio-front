@@ -42,7 +42,7 @@ export default function CartPage() {
     }
 
     return (
-        <div style={{paddingTop: "100px"}}>
+        <div>
             <h2>ショッピングカート</h2>
             <ul>
                 {cartItems.map((item: CartItem) => (

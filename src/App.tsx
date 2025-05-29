@@ -5,6 +5,7 @@ import styles from "./App.module.css";
 
 import './App.css'
 import Header from './components/Header';
+import ProductDetailPage from './features/products/productDetailPage';
 
 function App() {
 
@@ -14,6 +15,7 @@ function App() {
       <main className={styles.someContainerClass}>
         <Routes>
           <Route path="/" element={<ProductList />} />
+          <Route path="/product/:productId" element={<ProductDetailPage />} />
           <Route path="/cart" element={<CartPage />} />
         </Routes>
       </main>

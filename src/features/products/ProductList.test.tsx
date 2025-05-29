@@ -5,6 +5,14 @@ import { RenderWithProviders } from '../../utils/test-utils';
 import ProductList from './ProductList';
 import * as productSliceModule from './productSlice';
 import type { Product } from './productSlice';
+import { BrowserRouter } from 'react-router-dom';
+
+const renderWithRouterAndProviders = (
+  ui: React.ReactElement,
+  options?: Parameters<typeof RenderWithProviders>[1]
+) => {
+  return RenderWithProviders(<BrowserRouter>{ui}</BrowserRouter>, options);
+};
 
 // 元の関数の型を OriginalFetchProductsType として定義
 type OriginalFetchProductsType = typeof productSliceModule.fetchProducts;
@@ -67,7 +75,7 @@ describe('ProductList Component', () => {
       });
     
       it('3. 商品データ取得成功時に商品リストが正しく表示されること', () => {
-        RenderWithProviders(<ProductList />, {
+        renderWithRouterAndProviders(<ProductList />, {
           preloadedState: {
             products: {
               items: mockProducts,
