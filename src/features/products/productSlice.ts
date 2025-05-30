@@ -26,21 +26,63 @@ export const initialState: ProductsState = {
     error: null
 };
 
-export const fetchProducts = createAsyncThunk<Product[]>(
-    "products/fetchProducts",
-    async(_, thunkAPI) => {
+interface FetchProductsArgs {
+    category?: string;
+    search?: string;
+    sortBy?: string;
+    order?: 'asc' | 'desc';
+}
+
+export const fetchProducts = createAsyncThunk<
+    Product[],
+    FetchProductsArgs | void,
+    { rejectValue: string }
+> (
+    'products/fetchProducts',
+    async(args, { rejectWithValue }) => {
         try {
-            const response = await fetch("https://fakestoreapi.com/products");
+            let url = 'http://localhost:3001/api/products';
+            const queryParams = new URLSearchParams();
+
+            if (args){
+                if (args.category) queryParams.append('category',args.category);
+                if (args.search) queryParams.append('search', args.search);
+                if (args.sortBy) queryParams.append('sortBy', args.sortBy);
+                if (args.order) queryParams.append('order', args.order);
+            }
+            const queryString = queryParams.toString();
+            if (queryString){
+                url += `?${queryString}`;
+            }
+
+            const response = await fetch(url);
             if (!response.ok) {
-                return thunkAPI.rejectWithValue('Failed to fetch products. Status: ' + response.status);
+                const errorData = await response.json().catch(() => ({ message: 'Failed to fetch products'}));
+                return rejectWithValue(errorData.message || `Failed to fetch products. Status: ${response.status}`);
             }
             const data: Product[] = await response.json();
             return data;
-        }catch (error:any) {
-            return thunkAPI.rejectWithValue(error.message || 'An unknown error occurred');
+        } catch (error: any) {
+            return rejectWithValue(error.message || 'An unknown error occurred');
         }
     }
 );
+
+// export const fetchProducts = createAsyncThunk<Product[]>(
+//     "products/fetchProducts",
+//     async(_, thunkAPI) => {
+//         try {
+//             const response = await fetch("https://fakestoreapi.com/products");
+//             if (!response.ok) {
+//                 return thunkAPI.rejectWithValue('Failed to fetch products. Status: ' + response.status);
+//             }
+//             const data: Product[] = await response.json();
+//             return data;
+//         }catch (error:any) {
+//             return thunkAPI.rejectWithValue(error.message || 'An unknown error occurred');
+//         }
+//     }
+// );
 
 const ProductsSlice = createSlice({
     name: "products",
