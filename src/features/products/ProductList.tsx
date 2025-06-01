@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState, AppDispatch } from "../../app/store";
 import { fetchProducts, type Product} from "./productSlice";
-import { addItemToCart } from "../cart/cartSlice";
+import { addItemToCartAPI } from "../cart/cartSlice";
 import { Link } from "react-router-dom";
 
 export default function ProductList() {
@@ -66,7 +66,7 @@ export default function ProductList() {
 
     const handleAddToCart = (product: Product) => {
         console.log('AddToCartChange');
-        dispatch(addItemToCart(product));
+        dispatch(addItemToCartAPI({productId: product.id}));
         console.log(`${product.title}をカートに追加`)
     };
 

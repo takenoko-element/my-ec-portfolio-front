@@ -3,9 +3,9 @@ import type { AppDispatch } from "../../app/store";
 import {
     selectCartItems,
     selectCartTotalPrice,
-    removeItemFromCart,
-    updateItemQuantity,
-    clearCart
+    removeItemFromCartAPI,
+    updateItemQuantityAPI,
+    clearCartAPI
 } from './cartSlice';
 import type { CartItem } from "./cartSlice";
 import { Link } from "react-router-dom";
@@ -17,18 +17,18 @@ export default function CartPage() {
 
     const handleRemoveItem = (itemId: number) => {
         console.log('[CartPage] handleRemoveItem called with itemId:', itemId);
-        const actionToDispatch = removeItemFromCart(itemId);
+        const actionToDispatch = removeItemFromCartAPI(itemId);
         console.log('[CartPage] Action to dispatch:', actionToDispatch);
         dispatch(actionToDispatch);
         console.log('[CartPage] Dispatched action.');
     };
     const handleUpdateItemQuantity = (itemId: number, newQuantity: number) => {
         if (newQuantity >= 0){
-            dispatch(updateItemQuantity({id: itemId, quantity: newQuantity}));
+            dispatch(updateItemQuantityAPI({itemId: itemId, quantity: newQuantity}));
         }
     };
     const handleClearCart = () => {
-        dispatch(clearCart());
+        dispatch(clearCartAPI());
     };
 
     if(cartItems.length === 0){

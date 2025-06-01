@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState, AppDispatch } from "../../app/store";
 import { fetchProducts } from "./productSlice";
-import { addItemToCart } from "../cart/cartSlice";
+import { addItemToCartAPI } from "../cart/cartSlice";
 import styles from './ProductDtailPage.module.css'
 
 export default function ProductDetailPage() {
@@ -27,7 +27,7 @@ export default function ProductDetailPage() {
 
     const handleAddToCart = () => {
         if (product) {
-            dispatch(addItemToCart(product));
+            dispatch(addItemToCartAPI({productId: product.id}));
             console.log(`${product.title}をカートに追加しました。`);
         }
     };

@@ -55,7 +55,6 @@ describe('ProductList Component 2 (with MSW)', () => {
         renderWithRouterAndProviders(<ProductList />, {
             preloadedState: {
                 products: { items: [], status: 'idle', error: null },
-                cart: { items: [] },
             },
         });
 
