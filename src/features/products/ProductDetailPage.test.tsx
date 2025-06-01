@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, type MockInstance, beforeEach, afterEach } from 'vitest';
 import { RenderWithProviders } from '../../utils/test-utils';
 
-import ProductDetailPage from './productDetailPage';
+import ProductDetailPage from './ProductDetailPage';
 import * as productSliceModule from './productSlice';
 import * as cartSlicerModule from '../cart/cartSlice';
 import type { Product } from './productSlice';

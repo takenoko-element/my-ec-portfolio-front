@@ -5,7 +5,7 @@ import styles from "./App.module.css";
 
 import './App.css'
 import Header from './components/Header';
-import ProductDetailPage from './features/products/productDetailPage';
+import ProductDetailPage from './features/products/ProductDetailPage';
 
 function App() {
 

@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState, AppDispatch } from "../../app/store";
 import { fetchProducts, type Product} from "./productSlice";
@@ -28,10 +28,20 @@ export default function ProductList() {
         dispatch(fetchProducts({
             search: appliedSearchTerm || undefined,
             category: selectedCategory || undefined,
-            sortBy: sortBy || undefined,
-            order: sortOrder,
+            // sortBy: sortBy || undefined,
+            // order: sortOrder,
         }));
-    },[dispatch, appliedSearchTerm, selectedCategory, sortBy, sortOrder]);
+    },[dispatch, appliedSearchTerm, selectedCategory/*, sortBy, sortOrder*/]);
+
+    const sortedProducts = useMemo(() => {
+        let productsToSort = [...products];
+        if (sortBy === 'price') {
+            productsToSort.sort((a, b) => sortOrder === 'asc'? a.price - b.price : b.price - a.price);
+        } else if (sortBy === 'rating') {
+            productsToSort.sort((a, b) => sortOrder === 'asc'? a.rating.rate - b.rating.rate : b.rating.rate - a.rating.rate);
+        }
+        return productsToSort;
+    },[products,sortBy, sortOrder])
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         console.log('searchChange');
@@ -78,7 +88,7 @@ export default function ProductList() {
                     onChange={handleSearchChange}
                 />
                 <button type="submit">検索</button>
-                <select value={selectedCategory} onChange={handleCategoryChange}>
+                <select value={selectedCategory} aria-label="カテゴリ選択" onChange={handleCategoryChange}>
                     <option value="">すべてのカテゴリ</option>
                     <option value="electronics">Electronics</option>
                     <option value="jewelery">Jewelery</option>
@@ -98,7 +108,7 @@ export default function ProductList() {
             {/* {productStatus === 'failed' && <p style={{color: 'red'}}>エラー: {error}</p>} */}
             {products.length === 0 && productStatus === "succeeded" && <p>商品がありません。</p>}
             <ul>
-                {products.map((product: Product) => (
+                {sortedProducts.map((product: Product) => (
                     <li key = {product.id}>
                         <h3>
                             <Link to={`/product/${product.id}`}>{product.title}</Link>

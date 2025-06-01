@@ -6,6 +6,7 @@ import ProductList from './ProductList';
 import * as productSliceModule from './productSlice';
 import type { Product } from './productSlice';
 import { BrowserRouter } from 'react-router-dom';
+import userEvent from '@testing-library/user-event';
 
 const renderWithRouterAndProviders = (
   ui: React.ReactElement,
@@ -32,7 +33,7 @@ describe('ProductList Component', () => {
         
         spiedFetchProducts.mockImplementation(() => {
             const mockThunk = (_dispatch: any, _getState: any): Promise<any> => {
-                return Promise.resolve({ meta: { requestId: 'mocked' }, payload: [] as Product[], type: 'mock/fulfilled' });
+                return Promise.resolve(mockProducts);
             };
             // mockImplementation は元の関数と同じシグネチャの関数を期待する。
             // OriginalFetchProductsType は () => AsyncThunkAction<...> なので、
@@ -46,7 +47,6 @@ describe('ProductList Component', () => {
         spiedFetchProducts.mockRestore();
     });
 
-    // ... テスト1〜4 (変更なし) ...
     it('1. ローディング状態が正しく表示されること', () => {
         RenderWithProviders(<ProductList />, {
           preloadedState: {
@@ -119,5 +119,63 @@ describe('ProductList Component', () => {
         await waitFor(() => {
             expect(spiedFetchProducts).toHaveBeenCalled();
         });
+    });
+    it('6. 初回レンダリング時に適切な引数で fetchProducts がディスパッチされること', () => {
+        renderWithRouterAndProviders(<ProductList />, {
+          preloadedState: {
+            // 初期状態は products スライスが idle で items が空など
+            products: { items: [], status: 'idle', error: null },
+            cart: { items: [] }, // cart の初期状態も提供
+          },
+        });
+
+        // useEffect が実行され、fetchProducts が呼ばれることを期待
+        expect(spiedFetchProducts).toHaveBeenCalledTimes(1);
+        // 初回はデフォルトの引数（または空のオブジェクト）で呼ばれることを確認
+        // ProductList の useEffect の実装に依存
+        expect(spiedFetchProducts).toHaveBeenCalledWith({
+            search: undefined, // または ''
+            category: undefined, // または ''
+            // sortBy: undefined, // または ''
+            // order: 'asc', // ProductList の初期値
+        });
+    });
+    it('7. 検索ボタンクリック時に、検索語を含む引数で fetchProducts がディスパッチされること', async () => {
+      const user = userEvent.setup();
+      renderWithRouterAndProviders(<ProductList />, {
+        preloadedState: {
+          products: {
+            items: [], status: 'idle', error: null,
+          },
+        },
+      });
+      spiedFetchProducts.mockClear();
+
+      const searchInput = screen.getByPlaceholderText(/商品名を検索.../i);
+      const searchButton = screen.getByRole('button', {name: /検索/i});
+      await user.type(searchInput, 'Product A');
+      await user.click(searchButton);
+
+      expect(spiedFetchProducts).toHaveBeenCalledTimes(1);
+      expect(spiedFetchProducts).toHaveBeenLastCalledWith(expect.objectContaining({
+        search: 'Product A',
+      }));
+    });
+    it('8. カテゴリ変更時に、選択されたカテゴリを含む引数で fetchProducts がディスパッチされること', async () => {
+      const user = userEvent.setup();
+      renderWithRouterAndProviders(<ProductList />, {
+        preloadedState: {
+          products: {items:[], status: 'idle', error: null},
+        },
+      });
+
+      spiedFetchProducts.mockClear();
+      const categorySelect = screen.getByRole('combobox', {name: /カテゴリ選択/i});
+      await user.selectOptions(categorySelect, 'electronics');
+
+      expect(spiedFetchProducts).toHaveBeenCalledTimes(1);
+      expect(spiedFetchProducts).toHaveBeenLastCalledWith(expect.objectContaining({
+        category: 'electronics',
+      }));
     });
 });
