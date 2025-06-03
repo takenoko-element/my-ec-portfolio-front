@@ -5,15 +5,27 @@ import {
     selectCartTotalPrice,
     removeItemFromCartAPI,
     updateItemQuantityAPI,
-    clearCartAPI
+    clearCartAPI,
+    selectCartStatus,
+    fetchCart,
+    selectCartError
 } from './cartSlice';
 import type { CartItem } from "./cartSlice";
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
 
 export default function CartPage() {
     const dispatch = useDispatch<AppDispatch>();
     const cartItems = useSelector(selectCartItems);
     const totalPrice = useSelector(selectCartTotalPrice);
+    const cartStatus = useSelector(selectCartStatus);
+    const cartError = useSelector(selectCartError);
+
+    useEffect(() =>{
+        if(cartStatus === 'idle'){
+            dispatch(fetchCart());
+        }
+    },[cartStatus, dispatch]);
 
     const handleRemoveItem = (itemId: number) => {
         console.log('[CartPage] handleRemoveItem called with itemId:', itemId);
@@ -30,6 +42,14 @@ export default function CartPage() {
     const handleClearCart = () => {
         dispatch(clearCartAPI());
     };
+
+    if(cartStatus === 'loading' && cartItems.length === 0){
+        return <div>カートを読み込んでいます...</div>
+    }
+
+    if(cartStatus === 'failed'){
+        return <div>カートの読み込みに失敗しました: {cartError || '不明なエラー' }</div>
+    }
 
     if(cartItems.length === 0){
         return (

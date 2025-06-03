@@ -61,7 +61,7 @@ describe('ProductDetailPage Component', () => {
     let addItemToCartSpy: MockInstance;
     beforeEach(() => {
         fetchProductsSpy = vi.spyOn(productSliceModule, 'fetchProducts');
-        addItemToCartSpy = vi.spyOn(cartSlicerModule, 'addItemToCart');
+        addItemToCartSpy = vi.spyOn(cartSlicerModule, 'addItemToCartAPI');
         fetchProductsSpy.mockImplementation(() => (
             (_dispatch: any, _getState: any) => 
                 Promise.resolve({meta:{}, payload: [mockProduct1, mockProduct2], type: 'products/fetchProducts/fulfelled'})
@@ -82,7 +82,6 @@ describe('ProductDetailPage Component', () => {
                 status: 'succeeded',
                 error: null,
             },
-            cart: { items: []},
          });
          
          expect(screen.getByRole('heading', { name: /Test Product 1/i})).toBeInTheDocument();
@@ -132,13 +131,12 @@ describe('ProductDetailPage Component', () => {
                 status: 'succeeded',
                 error: null,
             },
-            cart: { items: [] }
         });
         const addToCartButton = screen.getByRole('button', {name: /カートに追加/i});
         await user.click(addToCartButton);
 
         expect(addItemToCartSpy).toHaveBeenCalledTimes(1);
-        expect(addItemToCartSpy).toHaveBeenCalledWith(mockProduct1);
+        expect(addItemToCartSpy).toHaveBeenCalledWith({productId: mockProduct1.id});
     });
     it('6. ストアに商品データがない場合、fetchProductsがディスパッチされること', () => {
         renderProductDetailPage('1', {
@@ -168,7 +166,6 @@ describe('ProductDetailPage Component', () => {
         status: 'succeeded',
         error: null,
       },
-      cart: { items: [] }
     });
     // condition1: !product (true) && (productStatus === 'idle' (false) || productStatus === 'failed' (false)) -> false
     // condition2: productStatus === 'idle' (false) && productListFromStore.length === 0 (false) -> false
