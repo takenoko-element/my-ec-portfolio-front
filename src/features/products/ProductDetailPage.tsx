@@ -52,22 +52,42 @@ export default function ProductDetailPage() {
     }
 
     return (
-        <div className={styles.ProductDetailContainer}>
-            <Link to='/' className={styles.backLink}>← 商品一覧へ戻る</Link>
-            <div className={styles.productContent}>
-                <div className={styles.productImage}>
-                    <img src={product.image} alt={product.title} className={styles.productImage} />
+        <div className="container mx-auto p4 md:p-8 sm:p-2">
+            <div className="mb-6">
+                <Link to='/' className="text-blue-500 hover:text-blue-700 hover:underline">
+                    &larr; 商品一覧へ戻る
+                </Link>
+            </div>
+            <div className="bg-white shadow-x1 rounded-lg overflow-hidden md:flex">
+                {/* 画像エリア */}
+                <div className="md:w-1/2 p-4 flex justify-center items-center bg-gray-50">
+                    <img
+                        src={product.image}
+                        alt={product.title}
+                        className="max-w-full max-h-96 object-contain"
+                    />
                 </div>
-                <div className={styles.infoContainer}>
-                    <h1 className={styles.title}>{product.title}</h1>
-                    <p className={styles.category}>カテゴリー: {product.category}</p>
-                    <p className={styles.price}>価格: {product.price.toFixed(2)}</p>
-                    <div className={styles.rating}>
-                        評価: {product.rating.rate} ({product.rating.count}件のレビュー)
+                {/* 情報エリア */}
+                <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
+                    <div>
+                        <h1 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-2">{product.title}</h1>
+                        <p className="text-sm text-gray-500 mb-4">カテゴリー: {product.category}</p>
+                        <div className="flex items-center mb-4">
+                            {/* 星評価の表示 (例: ★★★★☆) */}
+                            <span className="text-yellow-500">
+                                {'★'.repeat(Math.round(product.rating.rate))}
+                                {'☆'.repeat(5 - Math.round(product.rating.rate))}
+                            </span>
+                            <span className="ml-2 text-sm text-gray-600">({product.rating.count} 件のレビュー)</span>
+                        </div>
+                        <p className="text-3xl font-semibold text-green-600 mb-6">価格: {product.price.toFixed(2)}</p>
+                        <h2 className="text-lg font-semibold text-gray-700 mb-2">商品説明</h2>
+                        <p className="text-gray-600 leading-relaxed mb-6">{product.description}</p>
                     </div>
-                    <p className={styles.descriptionTitle}>商品説明:</p>
-                    <p className={styles.description}>{product.description}</p>
-                    <button onClick={handleAddToCart} className={styles.addToCartButton}>
+                    <button
+                        onClick={handleAddToCart}
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-150 ease-in-out text-lg"
+                    >
                         カートに追加
                     </button>
                 </div>
