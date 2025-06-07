@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useState, useEffect, useMemo, useRef, type FormEvent } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState, AppDispatch } from "../../app/store";
 import { fetchProducts, type Product} from "./productSlice";
@@ -18,6 +18,34 @@ export default function ProductList() {
     const [appliedSearchTerm, setAppliedSearchTerm] = useState('');
     const [sortBy, setSortBy] = useState('');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+
+    const [isSearchVisible, setIsSearchVisible] = useState(true);
+    const lastScrollY = useRef(0);
+
+    // ---- scroll event header ----
+    const handleScroll = () => {
+        const currentScrollY = window.scrollY;
+
+        // 閾値より下にいて、かつ、下にスクロールしている場合にのみ非表示にする
+        if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
+            setIsSearchVisible(false);
+        } else {
+            // それ以外の場合 (上にスクロールしている、または閾値より上にいる場合) は表示する
+            setIsSearchVisible(true);
+        }
+
+        // 現在のスクロール位置を次回の比較のために保存
+        lastScrollY.current = currentScrollY;
+    };
+
+    // ---- useEffect Hooks
+    // スクロールイベントリスナーの登録と解除
+    useEffect(() => {
+        window.addEventListener('scroll', handleScroll, {passive: true});
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    },[]);
 
     useEffect(() => {
         // if (productStatus === "idle") {
@@ -83,7 +111,12 @@ export default function ProductList() {
     return (
         <div>
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 text-center sm:text-left">商品リスト</h2>
-            <form  onSubmit={handleSearchSubmit} className="mb-8 p-4 bg-white rounded-lg shadow">
+            <form
+                onSubmit={handleSearchSubmit} 
+                className={`sticky top-16 bg-white/90 backdrop-blur-sm p-4 rounded-lg shadow-md mb-8 z-40
+                    transition-transform duration-300 ease-in-out
+                    ${isSearchVisible? 'translate-y-0' : '-translate-y-full'}`}
+            >
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-end">
                     <div>
                         <label htmlFor="search-term" className="block text-sm font-medium text-gray-700 mb-1">検索</label>
@@ -93,12 +126,12 @@ export default function ProductList() {
                             placeholder="商品名を検索..."
                             value={searchTerm}
                             onChange={handleSearchChange}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2"
+                            className="mt-1 block w-full rounded-md border border-gray-400 shadow-sm focus:outline-none focus:border-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2"
                         />
                     </div>
                     <div>
                         <label htmlFor="category-select" className="block text-sm font-medium text-gray-700 mb-1">カテゴリ</label>
-                        <select id="category-select" value={selectedCategory} onChange={handleCategoryChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2">
+                        <select id="category-select" value={selectedCategory} onChange={handleCategoryChange} className="mt-1 block w-full rounded-md border border-gray-400 shadow-sm focus:border-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2">
                             <option value="">すべてのカテゴリ</option>
                             <option value="electronics">Electronics</option>
                             <option value="jewelery">Jewelery</option>
@@ -108,7 +141,7 @@ export default function ProductList() {
                     </div>
                     <div>
                         <label htmlFor="sort-by" className="block text-sm font-medium text-gray-700 mb-1">並び替え</label>
-                        <select id="sort-by" value={sortBy} onChange={handleSortByChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2">
+                        <select id="sort-by" value={sortBy} onChange={handleSortByChange} className="mt-1 block w-full rounded-md border border-gray-400 shadow-sm focus:border-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2">
                             <option value="">並び替えなし</option>
                             <option value="price">価格</option>
                             <option value="rating">評価</option>
@@ -117,7 +150,7 @@ export default function ProductList() {
                     <div>
                         <label htmlFor="sort-order" className="block text-sm font-medium text-gray-700 mb-1">順序</label>
                         <div className="flex space-x-2">
-                            <select id="sort-order" value={sortOrder} onChange={handleSortOrderChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2">
+                            <select id="sort-order" value={sortOrder} onChange={handleSortOrderChange} className="mt-1 block w-full rounded-md border border-gray-400 shadow-sm focus:border-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2">
                                 <option value="asc">昇順</option>
                                 <option value="desc">降順</option>
                             </select>

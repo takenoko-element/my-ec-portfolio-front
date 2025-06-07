@@ -125,7 +125,6 @@ describe('ProductList Component', () => {
           preloadedState: {
             // 初期状態は products スライスが idle で items が空など
             products: { items: [], status: 'idle', error: null },
-            cart: { items: [] }, // cart の初期状態も提供
           },
         });
 
