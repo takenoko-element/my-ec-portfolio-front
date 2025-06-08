@@ -1,4 +1,4 @@
-import { http, HttpResponse } from 'msw';
+import { delay, http, HttpResponse } from 'msw';
 import type { Product } from '../features/products/productSlice';
 import type { CartItem } from '../features/cart/cartSlice';
 
@@ -10,10 +10,19 @@ let mockServerCart: CartItem[] = [];
 
 export const handlers = [
     // 商品リスト取得のモック (/api/products または http://localhost:3001/api/products)
-    http.get('*/api/products', ({ request }) => {
+    http.get('*/api/products', async ({ request }) => {
         const url = new URL(request.url);
         const searchTerm = url.searchParams.get('search');
         const category = url.searchParams.get('category');
+
+        /* --- ローディング確認用 --- */
+        // await delay(1500); 
+
+        /* --- エラーメッセージ確認用 --- */
+        // return new HttpResponse(null, {
+        //     status: 500,
+        //     statusText: 'Internal Server Error',
+        // });
 
         let filteredProducts = [...mockProducts];
         if (searchTerm){
@@ -30,6 +39,7 @@ export const handlers = [
     // cart
     // GET /api/cart
     http.get('*/api/cart', async () => {
+        await delay(1500); 
         return HttpResponse.json(mockServerCart);
     }),
 

@@ -3,8 +3,8 @@ import { useParams, Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState, AppDispatch } from "../../app/store";
 import { fetchProducts } from "./productSlice";
-import { addItemToCartAPI } from "../cart/cartSlice";
 import styles from './ProductDtailPage.module.css'
+import AddToCartButton from "../cart/AddToCartButton";
 
 export default function ProductDetailPage() {
     const dispatch = useDispatch<AppDispatch>();
@@ -25,12 +25,6 @@ export default function ProductDetailPage() {
         }
     },[productStatus, dispatch, product, productId, productListFromStore]);
 
-    const handleAddToCart = () => {
-        if (product) {
-            dispatch(addItemToCartAPI({productId: product.id}));
-            console.log(`${product.title}をカートに追加しました。`);
-        }
-    };
     if ( productStatus === 'loading') {
         return <div className={styles.loading}>ローディング中...</div>
     }
@@ -84,12 +78,7 @@ export default function ProductDetailPage() {
                         <h2 className="text-lg font-semibold text-gray-700 mb-2">商品説明</h2>
                         <p className="text-gray-600 leading-relaxed mb-6">{product.description}</p>
                     </div>
-                    <button
-                        onClick={handleAddToCart}
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-150 ease-in-out text-lg"
-                    >
-                        カートに追加
-                    </button>
+                    <AddToCartButton product={product} />
                 </div>
             </div>
         </div>
