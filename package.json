@@ -17,6 +17,7 @@
     "@reduxjs/toolkit": "^2.8.2",
     "@tailwindcss/cli": "^4.1.8",
     "@tailwindcss/postcss": "^4.1.8",
+    "firebase": "^11.9.0",
     "framer-motion": "^12.16.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
