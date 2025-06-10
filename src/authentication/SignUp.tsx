@@ -1,7 +1,7 @@
 // 新規登録フォームのコンポーネント
 import React, { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "./firebase";
+import { auth } from "../lib/firebase";
 
 const SignUp: React.FC = () => {
     const [email, setEmail] = useState<string>('');

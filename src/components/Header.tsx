@@ -1,10 +1,18 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from 'react-router-dom';
 import { selectCartTotalQuantity } from "../features/cart/cartSlice";
+import { logoutUser, selectUser } from "../features/auth/authSlice";
+import type { AppDispatch } from "../app/store";
 
 const Header: React.FC = () => {
     const totalQuantity = useSelector(selectCartTotalQuantity);
+    const user = useSelector(selectUser);
+    const dispatch = useDispatch<AppDispatch>();
+
+    const handleLogout = () => {
+        dispatch(logoutUser());
+    }
 
     return (
         <header className="bg-white shadow-md fixed top-0 left-0 right-0 z-50">
@@ -34,6 +42,21 @@ const Header: React.FC = () => {
                                 </span>
                             )}
                         </Link>
+                        {/* ログイン/ログアウト */}
+                        { user? (
+                            <>
+                                <span className="text-sm text-gray-600">こんにちは、{user.email}さん</span>
+                                <button onClick={handleLogout} className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-200">
+                                    ログアウト
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <Link to="/login" className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-200">
+                                    ログイン
+                                </Link>
+                            </>
+                        )}
                     </nav>
                 </div>
             </div>

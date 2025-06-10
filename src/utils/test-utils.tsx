@@ -10,6 +10,7 @@ import { Provider } from 'react-redux';
 import type { AppStore, RootState } from '../app/store'; // RootState は引き続き利用します
 import productsReducer, {type ProductsState} from '../features/products/productSlice';
 import cartReducer, { type CartState } from '../features/cart/cartSlice';
+import authReducer, { type AuthState } from '../features/auth/authSlice';
 
 // テスト用のレンダーオプションに preloadedState を追加するためのインターフェース
 interface ExtendedRenderOptions extends Omit<RenderOptions, 'queries'> {
@@ -30,6 +31,7 @@ export function RenderWithProviders(
     reducer: {
       products: productsReducer as Reducer<ProductsState, UnknownAction, ProductsState | undefined>,
       cart: cartReducer as Reducer<CartState, UnknownAction, CartState | undefined>,
+      auth: authReducer as Reducer<any, UnknownAction, AuthState | undefined>
     },
     preloadedState,
   });

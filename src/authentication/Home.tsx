@@ -1,7 +1,7 @@
 // ログイン後に表示されるホームページのコンポーネント
 import React from 'react';
 import { signOut } from 'firebase/auth';
-import { auth } from './firebase';
+import { auth } from '../lib/firebase';
 import { useAuth } from './AuthContext';
 
 const Home: React.FC = () => {

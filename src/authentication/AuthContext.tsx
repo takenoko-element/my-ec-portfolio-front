@@ -1,7 +1,7 @@
 // ログイン状態をグローバルに管理するためのContext
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { onAuthStateChanged, type User } from "firebase/auth";
-import { auth } from "./firebase";
+import { auth } from "../lib/firebase";
 
 // Contextに渡す値の型を定義
 interface AuthContextType {

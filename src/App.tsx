@@ -4,39 +4,46 @@ import ProductDetailPage from './features/products/ProductDetailPage';
 import { Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 
-import { AuthProvider, useAuth } from './authentication/AuthContext';
-import Home from './authentication/Home';
-import SignUp from './authentication/SignUp';
-import Login from './authentication/Login';
+import { useDispatch } from 'react-redux';
+import type { AppDispatch } from './app/store';
+import { useEffect } from 'react';
+import { onAuthStateChanged, type User } from 'firebase/auth';
+import { auth } from './lib/firebase';
+import { setUser } from './features/auth/authSlice';
+import Login from './features/auth/Login';
+import SignUp from './features/auth/Signup';
 
-// ログイン状態に応じて表示を切り替えるコンポーネント
-const AuthGate: React.FC = () => {
-  const { currentUser } = useAuth();
-
-  return currentUser ? (
-    <Home />
-  ) : (
-    <div className="grid md:grid-cols-2 gap-8">
-      <SignUp />
-      <Login />
-    </div>
-  );
-}
 
 function App() {
+  const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(() => {
+    // onAuthStateChanged は認証状態の変更を監視するリスナー
+    // 返り値としてリスナーを解除する関数 (unsubscribe) を返す
+    const unsubscribe = onAuthStateChanged(auth, (user: User | null) => {
+      if(user) {
+        // ユーザーがログインしている場合
+        dispatch(setUser({
+          uid: user.uid,
+          email: user.email,
+        }));
+      } else {
+        // ユーザーがログアウトしている場合
+        dispatch(setUser(null));
+      }
+    });
+    // コンポーネントがアンマウントされる時にリスナーを解除
+    return () => unsubscribe();
+  },[dispatch]);
+
   return (
-    // <AuthProvider>
-    //   <div className="bg-gray-100 min-h-screen font-sans">
-    //     <div className="container mx-auto p-4 md:p-10">
-    //       <AuthGate />
-    //     </div>
-    //   </div>
-    // </AuthProvider>
     <Routes>
       <Route path="/" element={<Layout />} >
         <Route index element={<ProductList />} />
         <Route path="/product/:productId" element={<ProductDetailPage />} />
         <Route path="/cart" element={<CartPage />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/login" element={<Login />} />
       </Route>
     </Routes>
   );
