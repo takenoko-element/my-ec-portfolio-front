@@ -2,23 +2,17 @@ import {createAsyncThunk, createSlice, type PayloadAction} from '@reduxjs/toolki
 import type { RootState } from '../../app/store';
 import type { Product } from '../products/productSlice';
 
-const API_BASE_PORT = 'http://localhost:3001/api';
+import apiClient from '../../lib/axios';
 
-// 仮のAPIクライアント (実際にはエラーハンドリングなどをより丁寧に行う)
-const apiClient = {
-  get: async <T>(url: string): Promise<T> => 
-    fetch(url).then(async res => res.ok ? res.json() : Promise.reject(await res.text())),
-  post: async <T>(url: string, data: any): Promise<T> => 
-    fetch(url, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) }).then(async res => res.ok ? res.json() : Promise.reject(await res.text())),
-  put: async <T>(url: string, data: any): Promise<T> => 
-    fetch(url, { method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) }).then(async res => res.ok ? res.json() : Promise.reject(await res.text())),
-  delete: async <T>(url: string): Promise<T> => 
-    fetch(url, { method: 'DELETE' }).then(async res => res.ok ? res.json() : Promise.reject(await res.text())),
-};
-
-export interface CartItem extends Product {
+// バックエンドAPIから返ってくるカートアイテムの型
+// DBの`include: { product: true }`のおかげで、商品情報も含まれています。
+export interface CartItem {
+    id: number;
     quantity: number;
-};
+    userId: string;
+    productId: number;
+    product: Product;
+}
 
 export interface CartState {
     items: CartItem[];
@@ -32,88 +26,92 @@ const initialState: CartState = {
     error: null,
 };
 
+// 【createAsyncThunk解説】
+// 非同期処理を扱うためのRedux Toolkitの機能です。
+// <戻り値の型, 引数の型, 設定オブジェクトの型> という3つの型引数を取ります。
+
 // GET
 export const fetchCart = createAsyncThunk<
     CartItem[],
     void,
     {rejectValue: string}
 > (
-    'cart/fetch',
+    'cart/fetchCart',
     async(_, { rejectWithValue }) => {
         try {
-            const data = await apiClient.get<CartItem[]>(`${API_BASE_PORT}/cart`);
-            return data;
+            const response = await apiClient.get<CartItem[]>('/cart');
+            return response.data;
         } catch(error: any){
-            return rejectWithValue(error.message || String(error) || 'Fail to fetch cart');
+            return rejectWithValue(error.response?.data?.error || 'カートの取得に失敗しました');
         }
     }
 );
 
 // POST
 export const addItemToCartAPI = createAsyncThunk<
-    CartItem[], // fulfilledで返る型 (更新後のカート)
+    CartItem, // fulfilledで返る型 (更新後のカート)
     { productId: number; quantity?: number },
     { rejectValue: string }
 >(
-    'cart/addItemToCartAPI',
+    'cart/addItemToCart',
     async({ productId, quantity = 1 }, { rejectWithValue }) => {
         try {
             console.log(`addItemToCart(productId): ${productId}`);
-            const data = await apiClient.post<CartItem[]>(`${API_BASE_PORT}/cart/items`, {productId, quantity});
-            return data;
+            const response = await apiClient.post<CartItem>('/cart', {productId, quantity});
+            return response.data;
         }catch(error: any){
-            return rejectWithValue(error.message || String(error) || 'Failed to add item');
+            return rejectWithValue(error.response?.data?.error || 'アイテムの追加に失敗しました');
         }
     }
 );
 
 // PUT
 export const updateItemQuantityAPI = createAsyncThunk<
-    CartItem[],
+    CartItem,
     {itemId: number; quantity: number },
     {rejectValue: string}
 >(
-    'cart/updateItemQuantityAPI',
+    'cart/updateItemQuantity',
     async({ itemId, quantity }, { rejectWithValue }) => {
         try {
-            const data = await apiClient.put<CartItem[]>(`${API_BASE_PORT}/cart/items/${itemId}`, {quantity});
-            return data;
+            const response = await apiClient.put<CartItem>(`/cart/${itemId}`, {quantity});
+            return response.data;
         } catch(error: any){
-            return rejectWithValue(error.message || String(error) || 'Failed to update quantity');
+            return rejectWithValue(error.response?.data?.error || '数量の更新に失敗しました');
         }
     }
 );
 
 // DELETE
 export const removeItemFromCartAPI = createAsyncThunk<
-    CartItem[],
+    number,
     number,
     {rejectValue: string}
 >(
-    'cart/removeItemFromCartAPI',
+    'cart/removeItemFromCart',
     async(itemId, {rejectWithValue}) => {
         try {
-            const data = await apiClient.delete<CartItem[]>(`${API_BASE_PORT}/cart/items/${itemId}`);
-            return data;
+            await apiClient.delete<number>(`/cart/${itemId}`);
+            return itemId;
         } catch(error: any){
-            return rejectWithValue(error.message || String(error) || 'Failed to remove item');
+            return rejectWithValue(error.response?.data?.error || 'アイテムの削除に失敗しました');
         }
     }
 );
 
 // DELETE
 export const clearCartAPI = createAsyncThunk<
-    CartItem[],
+    void,
     void,
     {rejectValue: string}
 >(
-    'cart/clearCartAPI',
+    'cart/clearCart',
     async(_, {rejectWithValue}) => {
         try {
-            const data = await apiClient.delete<CartItem[]>(`${API_BASE_PORT}/cart/`);
-            return data;
+            await apiClient.delete('/cart');
+            return;
         } catch(error: any){
-            return rejectWithValue(error.message || String(error) || 'Failed to clear cart');
+            return rejectWithValue(error.response?.data?.error || 'カートの削除に失敗しました');
         }
     }
 );
@@ -122,6 +120,11 @@ const cartSlice = createSlice({
     name: 'cart',
     initialState,
     reducers: {
+        // ログアウト時にローカルのカート情報をクリアするためのReducer
+        clearCartLocally: (state) => {
+            state.items = [];
+            state.status = 'idle';
+        },
         // バックエンドサーバー実装時に削除
         // addItemToCart: (state, action: PayloadAction<Product>) => {
         //     const newItem = action.payload;
@@ -167,42 +170,54 @@ const cartSlice = createSlice({
         // addItemToCartAPI
         builder
             .addCase(addItemToCartAPI.pending, (state) => { state.status = 'loading'; /* 他のpending処理 */ })
-            .addCase(addItemToCartAPI.fulfilled, (state, action: PayloadAction<CartItem[]>) => {
+            .addCase(addItemToCartAPI.fulfilled, (state, action: PayloadAction<CartItem>) => {
                 state.status = 'succeeded';
-                state.items = action.payload; // APIが返したカート全体で更新
+                const updatedItem = action.payload;
+                const index = state.items.findIndex(item => item.id === updatedItem.id);
+                if (index !== -1) {
+                    state.items[index] = updatedItem;
+                } else {
+                    state.items.push(updatedItem);
+                }
             })
             .addCase(addItemToCartAPI.rejected, (state, action) => { state.status = 'failed'; state.error = action.payload || 'Error'; });
             
         // updateItemQuantityAPI
         builder
             .addCase(updateItemQuantityAPI.pending, (state) => { state.status = 'loading'; /* ... */ })
-            .addCase(updateItemQuantityAPI.fulfilled, (state, action: PayloadAction<CartItem[]>) => {
+            .addCase(updateItemQuantityAPI.fulfilled, (state, action: PayloadAction<CartItem>) => {
                 state.status = 'succeeded';
-                state.items = action.payload;
+                const updatedItem = action.payload;
+                const index = state.items.findIndex(item => item.id === updatedItem.id);
+                if (index !== -1) {
+                    state.items[index] = updatedItem;
+                }
             })
             .addCase(updateItemQuantityAPI.rejected, (state, action) => { state.status = 'failed'; state.error = action.payload || 'Error'; });
 
         // removeItemFromCartAPI
         builder
             .addCase(removeItemFromCartAPI.pending, (state) => { state.status = 'loading'; /* ... */ })
-            .addCase(removeItemFromCartAPI.fulfilled, (state, action: PayloadAction<CartItem[]>) => {
+            .addCase(removeItemFromCartAPI.fulfilled, (state, action: PayloadAction<number>) => {
                 state.status = 'succeeded';
-                state.items = action.payload;
+                const itemIdToRemove = action.payload;
+                state.items = state.items.filter(item => item.id !== itemIdToRemove);
             })
             .addCase(removeItemFromCartAPI.rejected, (state, action) => { state.status = 'failed'; state.error = action.payload || 'Error'; });
 
         // clearCartAPI
         builder
             .addCase(clearCartAPI.pending, (state) => { state.status = 'loading'; /* ... */ })
-            .addCase(clearCartAPI.fulfilled, (state, action: PayloadAction<CartItem[]>) => {
+            .addCase(clearCartAPI.fulfilled, (state) => {
                 state.status = 'succeeded';
-                state.items = action.payload; // APIから返される空のカート
+                state.items = [];
             })
             .addCase(clearCartAPI.rejected, (state, action) => { state.status = 'failed'; state.error = action.payload || 'Error'; });
     }
 });
 
 // export const {addItemToCart, removeItemFromCart, updateItemQuantity, clearCart} = cartSlice.actions;
+
 
 export const selectCartTotalQuantity = (state: RootState): number => {
     return state.cart.items.reduce((totalQuantity, currentItem) => {
@@ -212,7 +227,7 @@ export const selectCartTotalQuantity = (state: RootState): number => {
 
 export const selectCartTotalPrice = (state: RootState): number => {
     return state.cart.items.reduce((totalPrice, currentItem) => {
-        return totalPrice + (currentItem.price * currentItem.quantity);
+        return totalPrice + (currentItem.product.price * currentItem.quantity);
     },0)
 };
 
@@ -220,4 +235,5 @@ export const selectCartStatus = (state: RootState) => state.cart.status;
 export const selectCartItems = (state: RootState) => state.cart.items;
 export const selectCartError = (state: RootState) => state.cart.error;
 
+export const { clearCartLocally } = cartSlice.actions;
 export default cartSlice.reducer;

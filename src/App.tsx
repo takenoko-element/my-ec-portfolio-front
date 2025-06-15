@@ -11,7 +11,8 @@ import { onAuthStateChanged, type User } from 'firebase/auth';
 import { auth } from './lib/firebase';
 import { setUser } from './features/auth/authSlice';
 import Login from './features/auth/Login';
-import SignUp from './features/auth/Signup';
+import SignUp from './features/auth/SignUp';
+import { fetchCart, clearCartLocally } from './features/cart/cartSlice';
 
 
 function App() {
@@ -27,9 +28,11 @@ function App() {
           uid: user.uid,
           email: user.email,
         }));
+        dispatch(fetchCart());
       } else {
         // ユーザーがログアウトしている場合
         dispatch(setUser(null));
+        dispatch(clearCartLocally());
       }
     });
     // コンポーネントがアンマウントされる時にリスナーを解除
