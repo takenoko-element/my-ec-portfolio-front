@@ -45,6 +45,9 @@ const Header: React.FC = () => {
                         {/* ログイン/ログアウト */}
                         { user? (
                             <>
+                                <Link to="/order-history" className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-200">
+                                    注文履歴
+                                </Link>
                                 <span className="text-sm text-gray-600">こんにちは、{user.email}さん</span>
                                 <button onClick={handleLogout} className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-200">
                                     ログアウト

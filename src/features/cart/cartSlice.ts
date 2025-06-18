@@ -1,6 +1,7 @@
 import {createAsyncThunk, createSlice, type PayloadAction} from '@reduxjs/toolkit';
 import type { RootState } from '../../app/store';
 import type { Product } from '../products/productSlice';
+import { createOrderAPI } from '../orders/orderSlice';
 
 import apiClient from '../../lib/axios';
 
@@ -213,6 +214,12 @@ const cartSlice = createSlice({
                 state.items = [];
             })
             .addCase(clearCartAPI.rejected, (state, action) => { state.status = 'failed'; state.error = action.payload || 'Error'; });
+        // orderSlice - createOrderAPI
+        builder
+            .addCase(createOrderAPI.fulfilled, (state) => {
+                state.status = 'succeeded';
+                state.items = [];
+            });
     }
 });
 

@@ -13,6 +13,8 @@ import { setUser } from './features/auth/authSlice';
 import Login from './features/auth/Login';
 import SignUp from './features/auth/SignUp';
 import { fetchCart, clearCartLocally } from './features/cart/cartSlice';
+import PrivateRoute from './components/PrivateRoute';
+import OrderHistoryPage from './features/orders/OrderHistoryPage';
 
 
 function App() {
@@ -47,6 +49,9 @@ function App() {
         <Route path="/cart" element={<CartPage />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
+        <Route element={<PrivateRoute />}>
+          <Route path="/order-history" element={<OrderHistoryPage />} />
+        </Route>
       </Route>
     </Routes>
   );

@@ -14,12 +14,14 @@ export interface AuthState {
     user: AuthUser | null;
     status: 'idle' | 'loading' | 'succeeded' | 'failed';
     error: string | null;
+    authChecked: boolean;
 }
 
 const initialState: AuthState = {
     user: null,
     status: 'idle',
     error: null,
+    authChecked: false,
 }
 
 // 非同期アクション (Thunk)
@@ -76,6 +78,7 @@ const authSlice = createSlice({
         // Firebaseの認証状態の変更をリッスンしてユーザー情報をセットするReducer
         setUser: (state, action: PayloadAction<AuthUser | null>) => {
             state.user = action.payload;
+            state.authChecked = true;
         }
     },
     extraReducers: (builder) => {
@@ -107,9 +110,15 @@ const authSlice = createSlice({
                 state.error = action.payload as string;
             })
             // ログアウト
+            // pending不要： 高速で実行されるためloading時の処理（スピナーなど）が不要なため
             .addCase(logoutUser.fulfilled, (state) => {
                 state.user = null;
                 state.status = 'idle';
+            })
+            .addCase(logoutUser.rejected, (state, action) => {
+                state.user = null;
+                state.status = 'failed';
+                state.error = action.payload as string;
             })
     }
 })
@@ -119,5 +128,6 @@ export const {setUser} = authSlice.actions;
 export const selectUser = (state: RootState) => state.auth.user;
 export const selectAuthStatus = (state: RootState) => state.auth.status;
 export const selectAuthError = (state: RootState) => state.auth.error;
+export const selectAuthChecked = (state: RootState) => state.auth.authChecked;
 
 export default authSlice.reducer;

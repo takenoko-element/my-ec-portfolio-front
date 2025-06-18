@@ -10,10 +10,17 @@ import {
     selectCartError
 } from './cartSlice';
 import type { CartItem } from "./cartSlice";
-import { Link } from "react-router-dom";
+import { createOrderAPI } from "../orders/orderSlice";
+import { Link, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import { useState } from "react";
 
 export default function CartPage() {
     const dispatch = useDispatch<AppDispatch>();
+    const navigate = useNavigate();
+    // 注文処理中のローカルなローディング状態
+    const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+
     const cartItems = useSelector(selectCartItems);
     const totalPrice = useSelector(selectCartTotalPrice);
     const cartStatus = useSelector(selectCartStatus);
@@ -30,6 +37,21 @@ export default function CartPage() {
     };
     const handleClearCart = () => {
         dispatch(clearCartAPI());
+    };
+
+    const handlePlaceOrder = async () => {
+        setIsPlacingOrder(true);
+
+        try {
+            const resultAction = await dispatch(createOrderAPI()).unwrap();
+            toast.success('ご注文ありがとうございます！');
+
+        } catch (error: any) {
+            console.log('[CartPage] failed to placeOrder',error);
+            toast.error(error || '注文処理中にエラーが発生しました。');
+        } finally {
+            setIsPlacingOrder(false);
+        }
     };
 
     if(cartStatus === 'loading' && cartItems.length === 0){
@@ -121,7 +143,7 @@ export default function CartPage() {
             <div className="mt-8 p-4 bg-gray-50 rounded-lg shadow">
                 <div className="flex justify-between items-center mb-4">
                     <h3 className="text-xl font-semibold text-gray-800">合計金額:</h3>
-                    <p className="text-2xl font-bold text-green-600">{totalPrice.toFixed(2)}</p>
+                    <p className="text-2xl font-bold text-green-600">{`$ ${totalPrice.toFixed(2)}`}</p>
                 </div>
                 <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3">
                     <button 
@@ -132,9 +154,11 @@ export default function CartPage() {
                         カートを空にする
                     </button>
                     <button
-                        className="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700"
+                        onClick={handlePlaceOrder}
+                        disabled={isPlacingOrder || cartItems.length === 0}
+                        className="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 disabled:bg-gray-400"
                     >
-                        レジへ進む（未実装）
+                        {isPlacingOrder? '注文処理中...' : '注文確定'}
                     </button>
                 </div>
             </div>
