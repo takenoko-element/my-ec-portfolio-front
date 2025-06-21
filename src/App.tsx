@@ -15,6 +15,8 @@ import SignUp from './features/auth/SignUp';
 import { fetchCart, clearCartLocally } from './features/cart/cartSlice';
 import PrivateRoute from './components/PrivateRoute';
 import OrderHistoryPage from './features/orders/OrderHistoryPage';
+import CheckoutPage from './features/checkout/CheckoutPage';
+import OrderConfirmationPage from './features/checkout/OrderConfirmationPage';
 
 
 function App() {
@@ -51,6 +53,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route element={<PrivateRoute />}>
           <Route path="/order-history" element={<OrderHistoryPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
         </Route>
       </Route>
     </Routes>

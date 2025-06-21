@@ -4,14 +4,13 @@ import { fetchOrderAPI, selectOrders, selectOrderStatus } from "./orderSlice";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 
-
-
 const OrderHistoryPage = () => {
     const dispatch = useDispatch<AppDispatch>();
     const orders = useSelector(selectOrders);
     const status = useSelector(selectOrderStatus);
 
     useEffect(() => {
+        console.log('[OrderHistoryPage] useEffect status check');
         if (status === 'idle') {
             dispatch(fetchOrderAPI());
         }
@@ -25,7 +24,7 @@ const OrderHistoryPage = () => {
     }
 
     return (
-        <div className="container mx-auto p-4 md:p-8">
+        <div className="container mx-auto">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">注文履歴</h1>
 
             {orders.length === 0? (

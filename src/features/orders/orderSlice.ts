@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import apiClient from "../../lib/axios";
 import type { Product } from "../products/productSlice";
+import type { RootState } from "../../app/store";
 
 export interface OrderItem {
     id: number;
@@ -88,7 +89,6 @@ const orderSlice = createSlice({
     },
 });
 
-import type { RootState } from "../../app/store";
 export const selectOrders = (state: RootState) => state.orders.orders;
 export const selectOrderStatus = (state: RootState) => state.orders.status;
 

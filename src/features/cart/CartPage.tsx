@@ -10,16 +10,16 @@ import {
     selectCartError
 } from './cartSlice';
 import type { CartItem } from "./cartSlice";
-import { createOrderAPI } from "../orders/orderSlice";
-import { Link, useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
-import { useState } from "react";
+// import { createOrderAPI } from "../orders/orderSlice";
+import { Link } from "react-router-dom";
+// import toast from "react-hot-toast";
+// import { useState } from "react";
 
 export default function CartPage() {
     const dispatch = useDispatch<AppDispatch>();
-    const navigate = useNavigate();
-    // 注文処理中のローカルなローディング状態
-    const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+    // const navigate = useNavigate();
+    // // 注文処理中のローカルなローディング状態
+    // const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
     const cartItems = useSelector(selectCartItems);
     const totalPrice = useSelector(selectCartTotalPrice);
@@ -39,20 +39,20 @@ export default function CartPage() {
         dispatch(clearCartAPI());
     };
 
-    const handlePlaceOrder = async () => {
-        setIsPlacingOrder(true);
+    // const handlePlaceOrder = async () => {
+    //     setIsPlacingOrder(true);
 
-        try {
-            const resultAction = await dispatch(createOrderAPI()).unwrap();
-            toast.success('ご注文ありがとうございます！');
+    //     try {
+    //         const resultAction = await dispatch(createOrderAPI()).unwrap();
+    //         toast.success('ご注文ありがとうございます！');
 
-        } catch (error: any) {
-            console.log('[CartPage] failed to placeOrder',error);
-            toast.error(error || '注文処理中にエラーが発生しました。');
-        } finally {
-            setIsPlacingOrder(false);
-        }
-    };
+    //     } catch (error: any) {
+    //         console.log('[CartPage] failed to placeOrder',error);
+    //         toast.error(error || '注文処理中にエラーが発生しました。');
+    //     } finally {
+    //         setIsPlacingOrder(false);
+    //     }
+    // };
 
     if(cartStatus === 'loading' && cartItems.length === 0){
         return <div className="text-center py-10">カートを読み込んでいます...</div>
@@ -78,7 +78,7 @@ export default function CartPage() {
     }
 
     return (
-        <div className="container mx-auto p-4 md:p-8">
+        <div className="container mx-auto">
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">ショッピングカート</h2>
             <div className="bg-white shadow-md rounded-lg overflow-hidden">
                 <ul>
@@ -153,13 +153,20 @@ export default function CartPage() {
                     >
                         カートを空にする
                     </button>
-                    <button
+                    <Link
+                        to={'/checkout'}
+                        className={`px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white text-center bg-green-600 hover:bg-green-700 ${cartItems.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        onClick={(e) => {if (cartItems.length === 0) e.preventDefault();}}
+                    >
+                        レジへ進む
+                    </Link>
+                    {/* <button
                         onClick={handlePlaceOrder}
                         disabled={isPlacingOrder || cartItems.length === 0}
                         className="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 disabled:bg-gray-400"
                     >
                         {isPlacingOrder? '注文処理中...' : '注文確定'}
-                    </button>
+                    </button> */}
                 </div>
             </div>
         </div>
