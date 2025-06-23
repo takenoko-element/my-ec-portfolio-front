@@ -1,25 +1,21 @@
-import { useState, useEffect, useMemo, useRef } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import type { RootState, AppDispatch } from "../../app/store";
-import { fetchProducts, type Product} from "./productSlice";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import { motion } from 'framer-motion';
+
 import ProductCardSkeleton from "../../components/ProductCardSkeleton";
 import ErrorDisplay from "../../components/ErrorDisplay";
 import ProductFilterForm from "./ProductFilterForm";
-
-import { motion } from 'framer-motion';
 import AddToCartButton from "../cart/AddToCartButton";
-import { useProductFilters } from "./useProductFilters";
+import { useProductFilters } from "./Hooks/useProductFilters";
+import { useProducts } from "./Hooks/useProducts";
 
 export default function ProductList() {
-    const dispatch = useDispatch<AppDispatch>();
-
     const {
         searchTerm,
         selectedCategory,
-        appliedSearchTerm,
         sortBy,
         sortOrder,
+        appliedFilters,
         handleSearchSubmit,
         handleSearchChange,
         handleClearSearch,
@@ -27,10 +23,8 @@ export default function ProductList() {
         handleSortByChange,
         handleSortOrderChange,
     } = useProductFilters();
-
-    const products = useSelector((state: RootState) => state.products.items);
-    const productStatus = useSelector((state: RootState) => state.products.status);
-    const error = useSelector((state: RootState) => state.products.error);
+    
+    const { data: products, isLoading, isError, error, refetch } = useProducts(appliedFilters);
 
     const [isSearchVisible, setIsSearchVisible] = useState(true);
     const lastScrollY = useRef(0);
@@ -51,7 +45,6 @@ export default function ProductList() {
         lastScrollY.current = currentScrollY;
     };
 
-    // ---- useEffect Hooks
     // スクロールイベントリスナーの登録と解除
     useEffect(() => {
         window.addEventListener('scroll', handleScroll, {passive: true});
@@ -60,21 +53,8 @@ export default function ProductList() {
         };
     },[]);
 
-    const sortedProducts = useMemo(() => {
-        let productsToSort = [...products];
-        if (sortBy === 'price') {
-            productsToSort.sort((a, b) => sortOrder === 'asc'? a.price - b.price : b.price - a.price);
-        } else if (sortBy === 'rating') {
-            productsToSort.sort((a, b) => sortOrder === 'asc'? a.rating.rate - b.rating.rate : b.rating.rate - a.rating.rate);
-        }
-        return productsToSort;
-    },[products,sortBy, sortOrder])
-
     const handleRetry = () => {
-        dispatch(fetchProducts({
-            search: appliedSearchTerm || undefined,
-            category: selectedCategory || undefined,
-        }));
+        refetch();
     }
 
     return (
@@ -93,7 +73,7 @@ export default function ProductList() {
                 sortBy={sortBy}
                 sortOrder={sortOrder}
                 isSearchVisible={isSearchVisible}
-                isLoading={productStatus === 'loading'}
+                isLoading={isLoading}
                 onSearchSubmit={handleSearchSubmit}
                 onSearchChange={handleSearchChange}
                 onClearSearch={handleClearSearch}
@@ -102,7 +82,7 @@ export default function ProductList() {
                 onSortOrderChange={handleSortOrderChange}
             />
 
-            {productStatus === 'loading' && (
+            {isLoading && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-8">
                     {/* 固定数のスケルトンを表示 (例: 8個) */}
                     {Array.from({length: 8}).map((_, index) => (
@@ -111,17 +91,17 @@ export default function ProductList() {
                 </div>
             )}
 
-            {productStatus === 'failed' && (
-                <ErrorDisplay message={error || '不明なエラーです'} onRetry={handleRetry} />
+            {isError && (
+                <ErrorDisplay message={error instanceof Error? error.message : '不明なエラーです'} onRetry={handleRetry} />
             )}
             
-            {products.length === 0 && productStatus === "succeeded" && (
+            {!isLoading && !isError && products && products.length === 0 && (
                 <div className="text-center py-10 text-gray-500">該当する商品がありません。</div>
             )}
 
             {/* ----- 商品リストの表示 ----- */}
             <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {sortedProducts.map((product: Product, index) => (
+                {products?.map((product, index) => (
                     <motion.li key = {product.id} className="bg-white rounded-lg overflow-hidden flex flex-col"
                         initial={{ opacity: 0, y: 20 }} // 初期状態 (透明で下に20px)
                         animate={{ opacity: 1, y: 0 }}   // 最終状態 (不透明で元の位置)

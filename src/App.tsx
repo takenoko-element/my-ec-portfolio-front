@@ -3,6 +3,7 @@ import CartPage from './features/cart/CartPage';
 import ProductDetailPage from './features/products/ProductDetailPage';
 import { Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { useDispatch } from 'react-redux';
 import type { AppDispatch } from './app/store';
@@ -18,6 +19,7 @@ import OrderHistoryPage from './features/orders/OrderHistoryPage';
 import CheckoutPage from './features/checkout/CheckoutPage';
 import OrderConfirmationPage from './features/checkout/OrderConfirmationPage';
 
+const queryClient = new QueryClient();
 
 function App() {
   const dispatch = useDispatch<AppDispatch>();
@@ -44,20 +46,22 @@ function App() {
   },[dispatch]);
 
   return (
-    <Routes>
-      <Route path="/" element={<Layout />} >
-        <Route index element={<ProductList />} />
-        <Route path="/product/:productId" element={<ProductDetailPage />} />
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/login" element={<Login />} />
-        <Route element={<PrivateRoute />}>
-          <Route path="/order-history" element={<OrderHistoryPage />} />
-          <Route path="/checkout" element={<CheckoutPage />} />
-          <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
+    <QueryClientProvider client={queryClient}>
+      <Routes>
+        <Route path="/" element={<Layout />} >
+          <Route index element={<ProductList />} />
+          <Route path="/product/:productId" element={<ProductDetailPage />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/login" element={<Login />} />
+          <Route element={<PrivateRoute />}>
+            <Route path="/order-history" element={<OrderHistoryPage />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
+          </Route>
         </Route>
-      </Route>
-    </Routes>
+      </Routes>
+    </QueryClientProvider>
   );
 };
 
