@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from 'framer-motion';
-import { useAddToCart } from "./useAddToCart";
-import type { Product } from "../products/productSlice";
+import { useAddToCartHandler } from "./Hooks/useAddToCartToast";
+import type { Product } from "../../types";
 
 interface AddToCartButtonProps {
     product: Product;
@@ -9,7 +9,7 @@ interface AddToCartButtonProps {
 }
 
 const AddToCartButton: React.FC<AddToCartButtonProps> = ({product, className = ''}) => {
-    const { isAdding, handleAddToCart } = useAddToCart();
+    const { isAdding, handleAddToCart } = useAddToCartHandler();
 
     return (
         <motion.button
