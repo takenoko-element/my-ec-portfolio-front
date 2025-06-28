@@ -7,8 +7,8 @@ const fetchOrder = async (): Promise<Order[]> => {
     return response.data;
 }
 
-export const useOrder = () => {
-    return useQuery({queryKey: ['order'], queryFn: fetchOrder});
+export const useOrders = () => {
+    return useQuery({queryKey: ['orders'], queryFn: fetchOrder});
 };
 
 const createOrder = async (): Promise<Order> => {
@@ -21,7 +21,7 @@ export const useCreateOrder = () => {
     return useMutation({
         mutationFn: createOrder,
         onSuccess: () => {
-            queryClient.invalidateQueries({queryKey: ['order']});
+            queryClient.invalidateQueries({queryKey: ['orders']});
             queryClient.invalidateQueries({queryKey: ['cart']});
         }
     })

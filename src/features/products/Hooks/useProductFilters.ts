@@ -1,11 +1,8 @@
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 
 interface ProductFiltersReturn {
     // 状態の値
     searchTerm: string;
-    selectedCategory: string;
-    sortBy: string;
-    sortOrder: 'asc' | 'desc';
     appliedFilters: {
         search: string,
         category: string,
@@ -24,9 +21,6 @@ interface ProductFiltersReturn {
 export const useProductFilters = (): ProductFiltersReturn => {
     // 検索・フィルタリング用のローカルステート
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState('');
-    const [sortBy, setSortBy] = useState('');
-    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
     const [appliedFilters, setAppliedFilters] = useState({
         search: '',
         category: '',
@@ -34,15 +28,13 @@ export const useProductFilters = (): ProductFiltersReturn => {
         sortOrder: 'asc' as 'asc' | 'desc',
     });
 
-    const handleSearchSubmit = useCallback((event: React.FormEvent<HTMLFormElement>) => {
+    const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        setAppliedFilters({
+        setAppliedFilters(prev => ({
+            ...prev,
             search: searchTerm,
-            category: selectedCategory,
-            sortBy,
-            sortOrder,
-        });
-    },[searchTerm, selectedCategory, sortBy, sortOrder]);
+        }));
+    };
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(event.target.value);
     }
@@ -50,20 +42,26 @@ export const useProductFilters = (): ProductFiltersReturn => {
         setSearchTerm('');
     }
     const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        setSelectedCategory(event.target.value);
+        setAppliedFilters(prev => ({
+            ...prev,
+            category: event.target.value,
+        }));
     }
     const handleSortByChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        setSortBy(event.target.value);
+        setAppliedFilters(prev => ({
+            ...prev,
+            sortBy: event.target.value,
+        }));
     }
     const handleSortOrderChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        setSortOrder(event.target.value as 'asc' | 'desc');
+        setAppliedFilters(prev => ({
+            ...prev,
+            category: event.target.value as 'asc' | 'desc',
+        }));
     };
 
     return {
         searchTerm,
-        selectedCategory,
-        sortBy,
-        sortOrder,
         appliedFilters,
         handleSearchSubmit,
         handleSearchChange,

@@ -12,9 +12,6 @@ import { useProducts } from "./Hooks/useProducts";
 export default function ProductList() {
     const {
         searchTerm,
-        selectedCategory,
-        sortBy,
-        sortOrder,
         appliedFilters,
         handleSearchSubmit,
         handleSearchChange,
@@ -69,9 +66,9 @@ export default function ProductList() {
             {/* ----- 検索フォーム ----- */}
             <ProductFilterForm
                 searchTerm={searchTerm}
-                selectedCategory={selectedCategory}
-                sortBy={sortBy}
-                sortOrder={sortOrder}
+                selectedCategory={appliedFilters.category}
+                sortBy={appliedFilters.sortBy}
+                sortOrder={appliedFilters.sortOrder}
                 isSearchVisible={isSearchVisible}
                 isLoading={isLoading}
                 onSearchSubmit={handleSearchSubmit}

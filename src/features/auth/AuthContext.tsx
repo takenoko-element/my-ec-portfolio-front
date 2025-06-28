@@ -3,8 +3,8 @@ import { onAuthStateChanged, type User } from "firebase/auth";
 import { auth } from '../../lib/firebase';
 
 interface AuthContextType {
-    user: User | null,
-    authChecked: boolean,
+    user: User | null;
+    authChecked: boolean;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);

@@ -30,3 +30,16 @@ export const useProducts = (filters: ProductFilters) => {
         queryFn: fetchProducts,
     });
 };
+
+const fetchProductById = async (productId: string): Promise<Product> => {
+    const {data} = await apiClient.get(`/products/${productId}`);
+    return data;
+}
+
+export const useProduct = (productId: string | undefined) => {
+    return useQuery({
+        queryKey: ['product', productId],
+        queryFn: () => fetchProductById(productId!),
+        enabled: !!productId,
+    });
+};

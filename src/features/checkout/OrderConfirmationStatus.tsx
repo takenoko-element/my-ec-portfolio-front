@@ -1,13 +1,15 @@
 import { useStripe } from "@stripe/react-stripe-js";
 import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import type { AppDispatch } from "../../app/store";
-import { createOrderAPI } from "../orders/orderSlice";
+// import { useDispatch } from "react-redux";
+// import type { AppDispatch } from "../../app/store";
+// import { createOrderAPI } from "../orders/orderSlice";
 import { useEffect, useState } from "react";
+import { useCreateOrder } from "../orders/Hooks/useOrder";
 
 const OrderConfirmationStatus = () => {
     const stripe = useStripe();
-    const dispatch = useDispatch<AppDispatch>();
+    const {mutate: createOrder} = useCreateOrder();
+    // const dispatch = useDispatch<AppDispatch>();
     
     const [status, setStatus] = useState<'loading' | 'succeeded' | 'failed' | 'processing'>('loading');
     const [message, setMessage] = useState<string | null>(null);
@@ -39,7 +41,8 @@ const OrderConfirmationStatus = () => {
                 case 'succeeded':
                     setMessage('ご注文ありがとうございました！');
                     setStatus('succeeded');
-                    dispatch(createOrderAPI());
+                    // dispatch(createOrderAPI());
+                    createOrder();
                     break;
                 case 'processing':
                     setMessage('お支払いを処理中です。完了までしばらくお待ちください。');
@@ -51,7 +54,7 @@ const OrderConfirmationStatus = () => {
                     break;
             }
         });
-    }, [stripe, dispatch]);
+    }, [stripe]);
 
     const renderContent = () => {
         switch (status) {

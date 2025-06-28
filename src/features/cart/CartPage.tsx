@@ -16,6 +16,7 @@ import { useCart, useClearCart } from "./Hooks/useCart";
 import type { CartItem } from "../../types";
 import toast from "react-hot-toast";
 import CartItemRow from "./CartItemRow";
+import { useAuth } from "../auth/AuthContext";
 // import toast from "react-hot-toast";
 // import { useState } from "react";
 
@@ -29,7 +30,8 @@ export const CartPage = () => {
     // const totalPrice = useSelector(selectCartTotalPrice);
     // const cartStatus = useSelector(selectCartStatus);
     // const cartError = useSelector(selectCartError);
-    const {data: cartItems, isLoading, isError, error: cartError} = useCart();
+    const {user} = useAuth();
+    const {data: cartItems, isLoading, isError, error: cartError} = useCart(user);
     const {mutate: clearCart, isPending: isClearing} = useClearCart();
 
     // const handleUpdateItemQuantity = (cartItemId: number, newQuantity: number) => {

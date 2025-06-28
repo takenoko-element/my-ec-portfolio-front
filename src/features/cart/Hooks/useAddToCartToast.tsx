@@ -52,7 +52,7 @@ export const useAddToCartHandler = (): UseAddToCartHandlerReturn => {
                 error: (err) => <b>{err || 'カートへの追加に失敗しました。'}</b>,
             });
         } catch (error) {
-            console.error("[useAddToCart] カート追加処理で予期しないエラー:", error);
+            console.error("[useAddToCartToast] カート追加処理で予期しないエラー:", error);
         } finally {
             setIsAdding(false);
         }

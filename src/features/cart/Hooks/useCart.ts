@@ -1,19 +1,26 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import type { User } from "firebase/auth";
 import apiClient from "../../../lib/axios";
 import type { CartItem } from "../../../types";
 
 // GET /cart- カート情報の取得
 const fetchCart = async (): Promise<CartItem[]> => {
+    console.log(`[fetchCart]`);
     const response = await apiClient.get<CartItem[]>('/cart');
     return response.data;
 }
 
-export const useCart = () => {
-    return useQuery({queryKey: ['cart'], queryFn: fetchCart});
+export const useCart = (user: User | null) => {
+    return useQuery({
+        queryKey: ['cart'], 
+        queryFn: fetchCart,
+        enabled: !!user,
+    });
 };
 
 // POST /cart - カートに商品を追加
-const addToCart = async ({productId, quantity}: {productId: number, quantity?: number}): Promise<CartItem> => {
+const addToCart = async ({productId, quantity=1}: {productId: number, quantity?: number}): Promise<CartItem> => {
+    console.log(`[addToCart] productId: ${productId} quantity: ${quantity}`);
     const response = await apiClient.post('/cart', {productId, quantity});
     return response.data;
 }

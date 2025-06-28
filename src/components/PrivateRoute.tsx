@@ -1,10 +1,12 @@
-import { useSelector } from "react-redux";
+// import { useSelector } from "react-redux";
 import { Outlet, Navigate } from "react-router-dom";
-import { selectAuthChecked, selectUser } from "../features/auth/authSlice";
+// import { selectAuthChecked, selectUser } from "../features/auth/authSlice";
+import { useAuth } from "../features/auth/AuthContext";
 
 const PrivateRoute = () => {
-    const user = useSelector(selectUser);
-    const authChecked = useSelector(selectAuthChecked);
+    // const user = useSelector(selectUser);
+    // const authChecked = useSelector(selectAuthChecked);
+    const {user, authChecked} = useAuth();
 
     if(!authChecked){
         return <div>Loading...</div>
