@@ -1,22 +1,8 @@
-// import { useDispatch, useSelector } from "react-redux"
-// import type { AppDispatch } from "../../app/store"
-// import { fetchOrderAPI, selectOrders, selectOrderStatus } from "./orderSlice";
-// import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useOrders } from "./Hooks/useOrder";
 
 const OrderHistoryPage = () => {
-    // const dispatch = useDispatch<AppDispatch>();
-    // const orders = useSelector(selectOrders);
-    // const status = useSelector(selectOrderStatus);
     const {data: orders, isLoading, isError} = useOrders();
-
-    // useEffect(() => {
-    //     console.log('[OrderHistoryPage] useEffect status check');
-    //     if (status === 'idle') {
-    //         dispatch(fetchOrderAPI());
-    //     }
-    // }, [status, dispatch]);
 
     if(isLoading) {
         return <div className="text-center py-10">注文履歴を読み込んでいます...</div>

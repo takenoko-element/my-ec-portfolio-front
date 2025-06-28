@@ -1,52 +1,17 @@
-// import { useSelector, useDispatch } from "react-redux";
-// import type { AppDispatch } from "../../app/store";
-// import {
-//     selectCartItems,
-//     selectCartTotalPrice,
-//     removeItemFromCartAPI,
-//     updateItemQuantityAPI,
-//     clearCartAPI,
-//     selectCartStatus,
-//     selectCartError
-// } from './cartSlice';
-// import type { CartItem } from "./cartSlice";
-// import { createOrderAPI } from "../orders/orderSlice";
 import { Link } from "react-router-dom";
 import { useCart, useClearCart } from "./Hooks/useCart";
 import type { CartItem } from "../../types";
 import toast from "react-hot-toast";
 import CartItemRow from "./CartItemRow";
 import { useAuth } from "../auth/AuthContext";
-// import toast from "react-hot-toast";
-// import { useState } from "react";
 
 export const CartPage = () => {
-    // const dispatch = useDispatch<AppDispatch>();
-    // // const navigate = useNavigate();
-    // // // 注文処理中のローカルなローディング状態
-    // // const [isPlacingOrder, setIsPlacingOrder] = useState(false);
-
-    // const cartItems = useSelector(selectCartItems);
-    // const totalPrice = useSelector(selectCartTotalPrice);
-    // const cartStatus = useSelector(selectCartStatus);
-    // const cartError = useSelector(selectCartError);
     const {user} = useAuth();
     const {data: cartItems, isLoading, isError, error: cartError} = useCart(user);
     const {mutate: clearCart, isPending: isClearing} = useClearCart();
 
-    // const handleUpdateItemQuantity = (cartItemId: number, newQuantity: number) => {
-    //     if (newQuantity > 0){
-    //         dispatch(updateItemQuantityAPI({itemId: itemId, quantity: newQuantity}));
-    //         updateMutate({cartItemId, quantity: newQuantity})
-    //     }
-    // };
-    // const handleRemoveItem = (itemId: number) => {
-    //     console.log('[CartPage] handleRemoveItem called with itemId:', itemId);
-    //     dispatch(removeItemFromCartAPI(itemId));
 
-    // };
     const handleClearCart = () => {
-        // dispatch(clearCartAPI());
         clearCart(
             undefined, {
                 onSuccess: () => toast.success('カートを空にしました。'),
@@ -86,6 +51,7 @@ export const CartPage = () => {
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">ショッピングカート</h2>
             <div className="bg-white shadow-md rounded-lg overflow-hidden">
                 <ul>
+                    {/* 個々のカートアイテムの処理はCartItemRowに切り出す */}
                     {cartItems.map((item: CartItem) => (
                         <CartItemRow key={item.id} item={item} />
                     ))}
@@ -112,13 +78,6 @@ export const CartPage = () => {
                     >
                         レジへ進む
                     </Link>
-                    {/* <button
-                        onClick={handlePlaceOrder}
-                        disabled={isPlacingOrder || cartItems.length === 0}
-                        className="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 disabled:bg-gray-400"
-                    >
-                        {isPlacingOrder? '注文処理中...' : '注文確定'}
-                    </button> */}
                 </div>
             </div>
         </div>

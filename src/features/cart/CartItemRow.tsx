@@ -7,6 +7,7 @@ interface CartItemProps {
     item: CartItem;
 }
 
+// 個々のカートアイテムの処理はこちらに分離
 const CartItemRow = ({item}: CartItemProps) => {
     const {mutate: updateQuantity, isPending: isUpdating} = useUpdateItemQuantity();
     const {mutate: removeItem, isPending: isRemoving} = useRemoveItemFromCart();

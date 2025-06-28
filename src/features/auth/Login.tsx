@@ -1,13 +1,9 @@
-// import { useDispatch, useSelector } from "react-redux";
-// import type { AppDispatch } from "../../app/store";
 import { Link, useNavigate } from "react-router-dom";
-// import { loginUser, selectAuthError, selectAuthStatus } from "./authSlice";
-
-import { ExclamationCircleIcon } from '@heroicons/react/24/solid';
-
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { ExclamationCircleIcon } from '@heroicons/react/24/solid';
+
 import { useLogin } from "./Hooks/useAuthActions";
 
 const loginSchema = z.object({
@@ -18,12 +14,7 @@ const loginSchema = z.object({
 type loginFormInputs = z.infer<typeof loginSchema>;
 
 const Login = () => {
-    // const [email, setEmail] = useState('');
-    // const [password, setPassword] = useState('');
-    // const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
-    // const authStatus = useSelector(selectAuthStatus);
-    // const authError = useSelector(selectAuthError);
     const {login, isLoading: isLogin, error: loginError} = useLogin();
 
     const {
@@ -36,12 +27,6 @@ const Login = () => {
     })
 
     const onSubmit: SubmitHandler<loginFormInputs> = async (data) => {
-        // dispatch(loginUser({email: data.email, password: data.password}))
-        //     .unwrap()
-        //     .then(() => {
-        //         navigate('/');
-        //     })
-        //     .catch((error: any) => console.error('Signup Failed:', error));
         try {
             await login({email:data.email, password: data.password});
             navigate('/');
@@ -49,19 +34,6 @@ const Login = () => {
             console.log('ログインに失敗しました。');
         }
     };
-
-    // const handleSubmit = (event: React.FormEvent) => {
-    //     event.preventDefault();
-    //     dispatch(loginUser({email, password}))
-    //         .unwrap()
-    //         .then(() => {
-    //             // ログイン成功後、トップページにリダイレクト
-    //             navigate('/');
-    //         })
-    //         .catch ((error: any) => {
-    //             console.error('Login Failed:', error);
-    //         });
-    // };
 
     return (
         <div className="flex items-center justify-center min-h-[calc(100vh-150px)] px-4 sm:px-6 lg:px-8">
@@ -76,11 +48,8 @@ const Login = () => {
                                 id="login-email" 
                                 type="email" 
                                 placeholder="email@example.com" 
-                                // value={email} 
-                                // onChange={(event) => setEmail(event.target.value)}
                                 className={`mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                     ${errors.email ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'}`}
-                                // required
                                 {...register('email')}
                             />
                             {errors.email && (
@@ -94,10 +63,7 @@ const Login = () => {
                                 id="login-password"
                                 type="password"
                                 placeholder="**********"
-                                // value={password}
-                                // onChange={(event) => setPassword(event.target.value)}
                                 className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                // required
                                 {...register('password')}
                             />
                             {errors.password && (

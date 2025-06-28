@@ -81,7 +81,7 @@ export default function ProductList() {
 
             {isLoading && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-8">
-                    {/* 固定数のスケルトンを表示 (例: 8個) */}
+                    {/* 固定数のスケルトンを表示 */}
                     {Array.from({length: 8}).map((_, index) => (
                         <ProductCardSkeleton key={index} />
                     ))}
@@ -102,7 +102,7 @@ export default function ProductList() {
                     <motion.li key = {product.id} className="bg-white rounded-lg overflow-hidden flex flex-col"
                         initial={{ opacity: 0, y: 20 }} // 初期状態 (透明で下に20px)
                         animate={{ opacity: 1, y: 0 }}   // 最終状態 (不透明で元の位置)
-                        transition={{ duration: 0.3, delay: index * 0.05 }} // 各アイテムを少しずつ遅延させて表示
+                        transition={{ duration: 0.3, delay: index * 0.05 }} // アニメーションの詳細 (0.3秒かけて実行)
                     >
                         <Link to={`/product/${product.id}`} className="block group">
                             <div className="w-full h-48 sm:h-56 overflow-hidden">

@@ -20,6 +20,7 @@ export const AuthProvider = ({children}: {children: ReactNode}) => {
             setUser(currentUser);
             setAuthChecked(true);
         });
+        // アンマウント時にリスナー解除
         return () => unsubscribe();
     },[]);
 

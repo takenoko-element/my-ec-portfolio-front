@@ -1,24 +1,16 @@
 import React from "react";
-// import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from "../features/auth/AuthContext";
 import { useCart } from "../features/cart/Hooks/useCart";
 import { useLogout } from "../features/auth/Hooks/useAuthActions";
-// import { selectCartTotalQuantity } from "../features/cart/cartSlice";
-// import { logoutUser, selectUser } from "../features/auth/authSlice";
-// import type { AppDispatch } from "../app/store";
 
 const Header: React.FC = () => {
-    // const totalQuantity = useSelector(selectCartTotalQuantity);
-    // const user = useSelector(selectUser);
-    // const dispatch = useDispatch<AppDispatch>();
     const {user} = useAuth()
     const {logout} = useLogout();
     const {data: cartItems} = useCart(user);
     const navigate = useNavigate();
 
     const handleLogout = async () => {
-        // dispatch(logoutUser());
         await logout();
         navigate('/');
     }

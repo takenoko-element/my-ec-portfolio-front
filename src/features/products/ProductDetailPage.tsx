@@ -1,31 +1,10 @@
-// import { useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-// import { useSelector, useDispatch } from "react-redux";
-// import type { RootState, AppDispatch } from "../../app/store";
-// import { fetchProducts } from "./productSlice";
-// import styles from './ProductDtailPage.module.css'
 import AddToCartButton from "../cart/AddToCartButton";
 import { useProduct } from "./Hooks/useProducts";
 
 export default function ProductDetailPage() {
-    // const dispatch = useDispatch<AppDispatch>();
     const { productId } = useParams<{ productId: string }>();
     const {data: product, isLoading, isError, error} = useProduct(productId);
-
-    // const productListFromStore = useSelector((state: RootState) => state.products.items);
-    // const product = productListFromStore.find((item)=> item.id === Number(productId));
-    // const productStatus = useSelector((state: RootState) => state.products.status);
-    // const error = useSelector((state: RootState) => state.products.error);
-    
-    // useEffect(() => {
-    //     const condition1 = !product && (productStatus === 'idle' || productStatus === 'failed');
-    //     const condition2 = productStatus === 'idle' && productListFromStore.length === 0;
-
-    //     if(condition1 || condition2) {
-    //         console.log('ProductDetailPage: Dispatching fetchProducts because product not found or initial load');
-    //         dispatch(fetchProducts());
-    //     }
-    // },[productStatus, dispatch, product, productId, productListFromStore]);
 
     if (isLoading) {
         return <div className="text-2xl text-center">ローディング中...</div>

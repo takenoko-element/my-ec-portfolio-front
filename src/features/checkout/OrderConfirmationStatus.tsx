@@ -1,15 +1,11 @@
 import { useStripe } from "@stripe/react-stripe-js";
 import { Link } from "react-router-dom";
-// import { useDispatch } from "react-redux";
-// import type { AppDispatch } from "../../app/store";
-// import { createOrderAPI } from "../orders/orderSlice";
 import { useEffect, useState } from "react";
 import { useCreateOrder } from "../orders/Hooks/useOrder";
 
 const OrderConfirmationStatus = () => {
     const stripe = useStripe();
     const {mutate: createOrder} = useCreateOrder();
-    // const dispatch = useDispatch<AppDispatch>();
     
     const [status, setStatus] = useState<'loading' | 'succeeded' | 'failed' | 'processing'>('loading');
     const [message, setMessage] = useState<string | null>(null);
@@ -20,12 +16,12 @@ const OrderConfirmationStatus = () => {
             return;
         }
 
-        // 【URLSearchParams解説】ブラウザ標準の機能で、現在のURLのクエリパラメータ(?以降)を簡単に操作できる
+        // URLSearchParams:
+        // ブラウザ標準の機能で、現在のURLのクエリパラメータ(?以降)を簡単に操作できる
         const clientSecret = new URLSearchParams(window.location.search).get(
             'payment_intent_client_secret'
         );
 
-        console.log(`[OrderConfirmationStatus] client secret: ${clientSecret}`);
         if(!clientSecret) {
             console.error("client_secretが見つかりません。");
             setStatus('failed');
@@ -33,15 +29,14 @@ const OrderConfirmationStatus = () => {
             return;
         }
 
-        // 【Stripe解説】stripe.retrievePaymentIntent:
-        // client_secretを使って、Stripeサーバーに「この決済、最終的にどうなりました？」と問い合わせます。
-        // これで、決済の最終的なステータス（成功、失敗、処理中など）を取得できます。
+        // tripe.retrievePaymentIntent:
+        // client_secretを使って、Stripeサーバーに「この決済、最終的にどうなりました？」と問い合わせる
+        // これで、決済の最終的なステータス（成功、失敗、処理中など）を取得する
         stripe.retrievePaymentIntent(clientSecret).then(({paymentIntent}) => {
             switch(paymentIntent?.status) {
                 case 'succeeded':
                     setMessage('ご注文ありがとうございました！');
                     setStatus('succeeded');
-                    // dispatch(createOrderAPI());
                     createOrder();
                     break;
                 case 'processing':

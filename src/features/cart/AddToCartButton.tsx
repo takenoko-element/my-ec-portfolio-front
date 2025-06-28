@@ -13,9 +13,9 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({product, className = '
 
     return (
         <motion.button
-            whileHover={{ scale: isAdding ? 1 : 1.05 }} // ローディング中はアニメーションしない
+            whileHover={{ scale: isAdding ? 1 : 1.05 }}
             whileTap={{ scale: isAdding ? 1 : 0.95 }}
-            onClick={() => handleAddToCart(product)} // 商品情報を渡して実行
+            onClick={() => handleAddToCart(product)}
             disabled={isAdding}
             className={`w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out flex items-center justify-center disabled:bg-blue-400 disabled:cursor-not-allowed ${className}`}
         >
