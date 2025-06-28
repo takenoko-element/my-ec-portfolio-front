@@ -21,11 +21,11 @@ const CheckoutPage = () => {
     }, []);
 
     // Elementsプロバイダーのオプション
-    // clientSecretをElementsに渡すことで、Stripeがどの決済を扱えば良いか判断します。
+    // clientSecretをElementsに渡すことで、Stripeがどの決済を扱えば良いか判断する
     const options: StripeElementsOptions = {
         // バックエンドから送られてくる秘密の合言葉
         clientSecret: clientSecret || '',
-        // 外観 Stripeのいい感じの見た目（任意オプション）
+        // 外観: Stripeの良い感じの見た目（任意オプション）
         appearance: {theme: 'stripe'},
     };
 
@@ -33,7 +33,7 @@ const CheckoutPage = () => {
         <div className="container mx-auto p-8">
             <h1 className="text-2xl font-bold mb-6">お支払い情報の入力</h1>
             {clientSecret ? (
-                // Elementsコンポーネント ラップしたコンポーネントを隠匿し中を見れなくする
+                // Elementsコンポーネント: ラップしたコンポーネントを隠匿し中を見れなくする
                 <Elements stripe={stripePromise} options={options}>
                     <CheckoutForm />
                 </Elements>

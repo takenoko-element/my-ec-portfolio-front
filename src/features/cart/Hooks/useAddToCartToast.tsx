@@ -1,23 +1,21 @@
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import toast from "react-hot-toast";
-import { addItemToCartAPI } from "./cartSlice";
-import type{ AppDispatch } from '../../app/store'
-import type { Product  } from '../products/productSlice'
+import { useAuth } from "../../auth/AuthContext";
+import { useAddToCart } from "./useCart";
 import { useNavigate } from "react-router-dom";
-import { selectUser } from "../auth/authSlice";
+import type { Product } from "../../../types";
+import toast from "react-hot-toast";
 
-interface UseAddToCartReturn {
+interface UseAddToCartHandlerReturn {
     isAdding: boolean;
     handleAddToCart: (product: Product) => Promise<void>;
 }
 
-export const useAddToCart = (): UseAddToCartReturn => {
+export const useAddToCartHandler = (): UseAddToCartHandlerReturn => {
     const [isAdding, setIsAdding] = useState(false);
-    const dispatch = useDispatch<AppDispatch>();
+    const {user} = useAuth();
+    const {mutateAsync} = useAddToCart();
     const navigate = useNavigate();
 
-    const user = useSelector(selectUser);
 
     const handleAddToCart = async (product: Product) => {
         if (!product || isAdding) {
@@ -46,7 +44,7 @@ export const useAddToCart = (): UseAddToCartReturn => {
 
         // ログイン済み処理
         setIsAdding(true);
-        const promise = dispatch(addItemToCartAPI({productId: product.id})).unwrap();
+        const promise = mutateAsync({productId: product.id});
         try {
             await toast.promise(promise, {
                 loading: 'カートに追加中...',
@@ -54,7 +52,7 @@ export const useAddToCart = (): UseAddToCartReturn => {
                 error: (err) => <b>{err || 'カートへの追加に失敗しました。'}</b>,
             });
         } catch (error) {
-            console.error("[useAddToCart] カート追加処理で予期しないエラー:", error);
+            console.error("[useAddToCartToast] カート追加処理で予期しないエラー:", error);
         } finally {
             setIsAdding(false);
         }

@@ -7,7 +7,7 @@ const OrderConfirmationPage = () => {
         <div className="container mx-auto p-8 flex justify-center items-center min-h-[60vh]">
             <Elements stripe={stripePromise}>
                 <OrderConfirmationStatus />
-            </Elements>    
+            </Elements>
         </div>
     )
 }

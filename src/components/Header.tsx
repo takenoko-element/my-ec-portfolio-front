@@ -1,18 +1,21 @@
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link } from 'react-router-dom';
-import { selectCartTotalQuantity } from "../features/cart/cartSlice";
-import { logoutUser, selectUser } from "../features/auth/authSlice";
-import type { AppDispatch } from "../app/store";
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from "../features/auth/AuthContext";
+import { useCart } from "../features/cart/Hooks/useCart";
+import { useLogout } from "../features/auth/Hooks/useAuthActions";
 
 const Header: React.FC = () => {
-    const totalQuantity = useSelector(selectCartTotalQuantity);
-    const user = useSelector(selectUser);
-    const dispatch = useDispatch<AppDispatch>();
+    const {user} = useAuth()
+    const {logout} = useLogout();
+    const {data: cartItems} = useCart(user);
+    const navigate = useNavigate();
 
-    const handleLogout = () => {
-        dispatch(logoutUser());
+    const handleLogout = async () => {
+        await logout();
+        navigate('/');
     }
+
+    const totalQuantity = cartItems?.reduce((sum, cartItem) => sum + cartItem.quantity, 0)
 
     return (
         <header className="bg-white shadow-md fixed top-0 left-0 right-0 z-50">
@@ -36,7 +39,7 @@ const Header: React.FC = () => {
                             className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-200 hover:text-gray-900 relative"
                         >
                             カート
-                            {totalQuantity > 0 && (
+                            {totalQuantity && totalQuantity > 0 && (
                                 <span className="absolute -top-1 -right-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">
                                     {totalQuantity}
                                 </span>

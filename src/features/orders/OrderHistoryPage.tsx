@@ -1,25 +1,13 @@
-import { useDispatch, useSelector } from "react-redux"
-import type { AppDispatch } from "../../app/store"
-import { fetchOrderAPI, selectOrders, selectOrderStatus } from "./orderSlice";
-import { useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useOrders } from "./Hooks/useOrder";
 
 const OrderHistoryPage = () => {
-    const dispatch = useDispatch<AppDispatch>();
-    const orders = useSelector(selectOrders);
-    const status = useSelector(selectOrderStatus);
+    const {data: orders, isLoading, isError} = useOrders();
 
-    useEffect(() => {
-        console.log('[OrderHistoryPage] useEffect status check');
-        if (status === 'idle') {
-            dispatch(fetchOrderAPI());
-        }
-    }, [status, dispatch]);
-
-    if(status === 'loading') {
+    if(isLoading) {
         return <div className="text-center py-10">注文履歴を読み込んでいます...</div>
     }
-    if(status === 'failed') {
+    if(isError) {
         return <div className="text-center py-10 text-red-600">注文履歴の読み込みに失敗しました。</div>
     }
 
@@ -27,11 +15,11 @@ const OrderHistoryPage = () => {
         <div className="container mx-auto">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">注文履歴</h1>
 
-            {orders.length === 0? (
+            {orders?.length === 0? (
                 <p className="text-center text-gray-500">注文はありません</p>
             ) : (
                 <div className="space-y-6">
-                    {orders.map((order) => (
+                    {orders?.map((order) => (
                         <div key={order.id} className="bg-white shadow-md rounded-lg p-6">
                             <div className="flex justify-between items-center border-b pb-4 mb-4">
                                 <div>

@@ -27,7 +27,7 @@ const CheckoutForm = () => {
             }
         });
 
-        // この下のコードは、リダイレクトに失敗した場合や即時エラーが出た場合にのみ実行されます。
+        // この下のコードは、リダイレクトに失敗した場合や即時エラーが出た場合にのみ実行される
         if(error.type === 'card_error' || error.type === 'validation_error') {
             setMessage(error.message || '決済情報の入力に誤りがあります。');
         } else {
@@ -43,10 +43,9 @@ const CheckoutForm = () => {
 
     return (
         <form id="payment-form" onSubmit={handleSubmit}>
-            {/* 【Stripe解説】PaymentElement:
-                カード番号、有効期限、CVC、国、郵便番号などの入力を、
-                一つのコンポーネントで安全に提供してくれます。
-                カード情報はStripeのサーバーに直接送信され、私たちのアプリには一切触れません。*/}
+            {/* PaymentElement:
+                カード番号、有効期限、CVC、国、郵便番号などの入力を、この一つのコンポーネントで提供してくれる
+                カード情報はStripeのサーバーに直接送信されるため、クライアントアプリは一切触れることはない（セキュリティ上の対策が簡易で済む）*/}
             <PaymentElement id="payment-element" options={paymentElementOptions} />
             
             <button disabled={isLoading || !stripe || !elements} id="submit" className="w-full mt-6 bg-blue-600 text-white font-bold py-3 rounded-md hover:bg-blue-700 disabled:bg-gray-400">

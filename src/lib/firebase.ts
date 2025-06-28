@@ -1,6 +1,5 @@
 import { initializeApp, type FirebaseApp } from 'firebase/app';
 import { getAuth, type Auth } from 'firebase/auth';
-import { getFirestore, type Firestore } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: "AIzaSyAJas-1GaPnPs0Z_4Qa2q5wNBZowcmKqd0",
@@ -16,4 +15,3 @@ const app: FirebaseApp = initializeApp(firebaseConfig);
 
 // Firebase Authenticationのインスタンスを取得してエクスポート
 export const auth: Auth = getAuth(app);
-export const db: Firestore = getFirestore(app);
