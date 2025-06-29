@@ -56,10 +56,10 @@ export const useProductFilters = (): ProductFiltersReturn => {
     const handleSortOrderChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setAppliedFilters(prev => ({
             ...prev,
-            category: event.target.value as 'asc' | 'desc',
+            sortOrder: event.target.value as 'asc' | 'desc',
         }));
     };
-
+    
     return {
         searchTerm,
         appliedFilters,
