@@ -2,14 +2,23 @@ import { useQuery } from "@tanstack/react-query";
 import apiClient from "../../../lib/axios";
 import type { Product } from "../../../types";
 
+interface ProductsApiResponse {
+    products: Product[];
+    totalPages: number;
+    currentPage: number;
+    totalProducts: number;
+}
+
 interface ProductFilters {
     search?: string;
     category?: string;
     sortBy?: string;
     sortOrder?: 'asc' | 'desc';
+    page?: number;
+    pageSize?: number;
 }
 
-const fetchProducts = async ({queryKey}: {queryKey: (string | ProductFilters)[]}): Promise<Product[]> => {
+const fetchProducts = async ({queryKey}: {queryKey: (string | ProductFilters)[]}): Promise<ProductsApiResponse> => {
     const [_key, filters] = queryKey;
 
     const params = new URLSearchParams();
@@ -18,6 +27,8 @@ const fetchProducts = async ({queryKey}: {queryKey: (string | ProductFilters)[]}
         if(filters.category) params.append('category', filters.category);
         if(filters.sortBy) params.append('sortBy', filters.sortBy);
         if(filters.sortOrder) params.append('sortOrder', filters.sortOrder);
+        if(filters.page) params.append('page', filters.page.toString());
+        if(filters.pageSize) params.append('pageSize', filters.pageSize.toString());
     }
     
     const {data} = await apiClient.get(`/products?${params.toString()}`)
