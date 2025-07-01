@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { motion } from 'framer-motion';
 
@@ -8,8 +8,12 @@ import ProductFilterForm from "./ProductFilterForm";
 import AddToCartButton from "../cart/AddToCartButton";
 import { useProductFilters } from "./Hooks/useProductFilters";
 import { useProducts } from "./Hooks/useProducts";
+import { useBreakpoint } from "../../Hooks/useBreakPoint";
+import Pagination from "../../components/Pagination";
 
-export default function ProductList() {
+const FIRST_PAGE = 1
+
+const ProductList = () => {
     const {
         searchTerm,
         appliedFilters,
@@ -21,7 +25,20 @@ export default function ProductList() {
         handleSortOrderChange,
     } = useProductFilters();
     
-    const { data: products, isLoading, isError, error, refetch } = useProducts(appliedFilters);
+    const [page, setPage] = useState(FIRST_PAGE);
+    const breakpoint = useBreakpoint();
+
+    const pageSize = useMemo(() => {
+        switch (breakpoint) {
+            case 'xl': return 20;
+            case 'lg': return 16;
+            case 'md': return 12;
+            case 'sm': return 8;
+            default:   return 4;
+        }
+    },[breakpoint]);
+
+    const { data: apiResponse, isLoading, isError, error, refetch } = useProducts({...appliedFilters, page, pageSize});
 
     const [isSearchVisible, setIsSearchVisible] = useState(true);
     const lastScrollY = useRef(0);
@@ -49,6 +66,11 @@ export default function ProductList() {
             window.removeEventListener('scroll', handleScroll);
         };
     },[]);
+
+    // フィルター実行時・ブレイクポイント変更時にはページ番号を1に戻す
+    useEffect(() => {
+        setPage(FIRST_PAGE);
+    },[appliedFilters,breakpoint]);
 
     const handleRetry = () => {
         refetch();
@@ -80,9 +102,9 @@ export default function ProductList() {
             />
 
             {isLoading && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mt-8">
                     {/* 固定数のスケルトンを表示 */}
-                    {Array.from({length: 8}).map((_, index) => (
+                    {Array.from({length: pageSize}).map((_, index) => (
                         <ProductCardSkeleton key={index} />
                     ))}
                 </div>
@@ -92,13 +114,13 @@ export default function ProductList() {
                 <ErrorDisplay message={error instanceof Error? error.message : '不明なエラーです'} onRetry={handleRetry} />
             )}
             
-            {!isLoading && !isError && products && products.length === 0 && (
+            {!isLoading && !isError && apiResponse?.products.length === 0 && (
                 <div className="text-center py-10 text-gray-500">該当する商品がありません。</div>
             )}
 
             {/* ----- 商品リストの表示 ----- */}
-            <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {products?.map((product, index) => (
+            <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                {apiResponse?.products?.map((product, index) => (
                     <motion.li key = {product.id} className="bg-white rounded-lg overflow-hidden flex flex-col"
                         initial={{ opacity: 0, y: 20 }} // 初期状態 (透明で下に20px)
                         animate={{ opacity: 1, y: 0 }}   // 最終状態 (不透明で元の位置)
@@ -124,6 +146,16 @@ export default function ProductList() {
                     </motion.li>
                 ))}
             </ul>
+            {/* ----- ページネーションの表示 ----- */}
+            {apiResponse && apiResponse.totalPages > 1 && (
+                <Pagination
+                    currentPage={page}
+                    totalPages={apiResponse.totalPages}
+                    onPageChange={setPage}
+                />
+            )}
         </div>
     );
 }
+
+export default ProductList;
