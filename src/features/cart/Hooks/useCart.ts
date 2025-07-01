@@ -5,7 +5,6 @@ import type { CartItem } from "../../../types";
 
 // GET /cart- カート情報の取得
 const fetchCart = async (): Promise<CartItem[]> => {
-    console.log(`[fetchCart]`);
     const response = await apiClient.get<CartItem[]>('/cart');
     return response.data;
 }
@@ -20,7 +19,6 @@ export const useCart = (user: User | null) => {
 
 // POST /cart - カートに商品を追加
 const addToCart = async ({productId, quantity=1}: {productId: number, quantity?: number}): Promise<CartItem> => {
-    console.log(`[addToCart] productId: ${productId} quantity: ${quantity}`);
     const response = await apiClient.post('/cart', {productId, quantity});
     return response.data;
 }
