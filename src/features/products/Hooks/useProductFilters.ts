@@ -1,4 +1,9 @@
 import React, { useState } from "react";
+import { FIRST_PAGE } from "../../../constants/pagination";
+
+interface useProductFiltersProps {
+    setPage: (pageNumber: number) => void;
+}
 
 interface ProductFiltersReturn {
     // 状態の値
@@ -18,7 +23,7 @@ interface ProductFiltersReturn {
     handleSortOrderChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
-export const useProductFilters = (): ProductFiltersReturn => {
+export const useProductFilters = ({setPage}: useProductFiltersProps): ProductFiltersReturn => {
     // 検索・フィルタリング用のローカルステート
     const [searchTerm, setSearchTerm] = useState('');
     const [appliedFilters, setAppliedFilters] = useState({
@@ -34,6 +39,7 @@ export const useProductFilters = (): ProductFiltersReturn => {
             ...prev,
             search: searchTerm,
         }));
+        setPage(FIRST_PAGE);
     };
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(event.target.value);
@@ -46,18 +52,21 @@ export const useProductFilters = (): ProductFiltersReturn => {
             ...prev,
             category: event.target.value,
         }));
+        setPage(FIRST_PAGE);
     }
     const handleSortByChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setAppliedFilters(prev => ({
             ...prev,
             sortBy: event.target.value,
         }));
+        setPage(FIRST_PAGE);
     }
     const handleSortOrderChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setAppliedFilters(prev => ({
             ...prev,
             sortOrder: event.target.value as 'asc' | 'desc',
         }));
+        setPage(FIRST_PAGE);
     };
     
     return {
