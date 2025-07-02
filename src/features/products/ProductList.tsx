@@ -8,7 +8,7 @@ import ProductFilterForm from "./ProductFilterForm";
 import AddToCartButton from "../cart/AddToCartButton";
 import { useProductFilters } from "./Hooks/useProductFilters";
 import { useProducts } from "./Hooks/useProducts";
-import { useBreakpoint } from "../../Hooks/useBreakPoint";
+import { useBreakpoint } from "../../Hooks/useBreakpoint";
 import Pagination from "../../components/Pagination";
 
 const FIRST_PAGE = 1
