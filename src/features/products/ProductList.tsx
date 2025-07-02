@@ -10,10 +10,13 @@ import { useProductFilters } from "./Hooks/useProductFilters";
 import { useProducts } from "./Hooks/useProducts";
 import { useBreakpoint } from "../../Hooks/useBreakpoint";
 import Pagination from "../../components/Pagination";
+import { FIRST_PAGE } from "../../constants/pagination";
 
-const FIRST_PAGE = 1
 
 const ProductList = () => {
+    const [page, setPage] = useState(FIRST_PAGE);
+    const breakpoint = useBreakpoint();
+
     const {
         searchTerm,
         appliedFilters,
@@ -23,10 +26,7 @@ const ProductList = () => {
         handleCategoryChange,
         handleSortByChange,
         handleSortOrderChange,
-    } = useProductFilters();
-    
-    const [page, setPage] = useState(FIRST_PAGE);
-    const breakpoint = useBreakpoint();
+    } = useProductFilters({setPage});
 
     const pageSize = useMemo(() => {
         switch (breakpoint) {
@@ -70,7 +70,7 @@ const ProductList = () => {
     // フィルター実行時・ブレイクポイント変更時にはページ番号を1に戻す
     useEffect(() => {
         setPage(FIRST_PAGE);
-    },[appliedFilters,breakpoint]);
+    },[breakpoint]);
 
     const handleRetry = () => {
         refetch();
