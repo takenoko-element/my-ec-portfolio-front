@@ -16,7 +16,7 @@
 //         const category = url.searchParams.get('category');
 
 //         /* --- ローディング確認用 --- */
-//         // await delay(1500); 
+//         // await delay(1500);
 
 //         /* --- エラーメッセージ確認用 --- */
 //         // return new HttpResponse(null, {
@@ -39,7 +39,7 @@
 //     // cart
 //     // GET /api/cart
 //     http.get('*/api/cart', async () => {
-//         await delay(1500); 
+//         await delay(1500);
 //         return HttpResponse.json(mockServerCart);
 //     }),
 
