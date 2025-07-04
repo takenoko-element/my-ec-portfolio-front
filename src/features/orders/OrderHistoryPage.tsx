@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom';
 import { useOrders } from './Hooks/useOrder';
+import { AxiosError } from 'axios';
 
 const OrderHistoryPage = () => {
-  const { data: orders, isLoading, isError } = useOrders();
+  const { data: orders, isLoading, isError, error } = useOrders();
 
   if (isLoading) {
     return (
@@ -10,11 +11,11 @@ const OrderHistoryPage = () => {
     );
   }
   if (isError) {
-    return (
-      <div className="text-center py-10 text-red-600">
-        注文履歴の読み込みに失敗しました。
-      </div>
-    );
+    const errorMessage =
+      error instanceof AxiosError && error.response?.data?.message
+        ? error.response.data.message
+        : '注文履歴の取得に失敗しました。';
+    return <div className="text-center py-10 text-red-600">{errorMessage}</div>;
   }
 
   return (

@@ -1,6 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '../../../lib/axios';
 import type { Product } from '../../../types';
+import { AxiosError } from 'axios';
+import type { ApiErrorData } from '../../../types/apiErrorData';
 
 interface ProductsApiResponse {
   products: Product[];
@@ -21,7 +23,7 @@ interface ProductFilters {
 const fetchProducts = async ({
   queryKey,
 }: {
-  queryKey: (string | ProductFilters)[];
+  queryKey: [string, ProductFilters];
 }): Promise<ProductsApiResponse> => {
   const [_key, filters] = queryKey;
 
@@ -41,7 +43,12 @@ const fetchProducts = async ({
 };
 
 export const useProducts = (filters: ProductFilters) => {
-  return useQuery({
+  return useQuery<
+    ProductsApiResponse,
+    AxiosError<ApiErrorData>,
+    ProductsApiResponse,
+    [string, ProductFilters]
+  >({
     queryKey: ['products', filters],
     queryFn: fetchProducts,
   });
@@ -53,7 +60,7 @@ const fetchProductById = async (productId: string): Promise<Product> => {
 };
 
 export const useProduct = (productId: string | undefined) => {
-  return useQuery({
+  return useQuery<Product, AxiosError<ApiErrorData>>({
     queryKey: ['product', productId],
     queryFn: () => fetchProductById(productId!),
     enabled: !!productId,

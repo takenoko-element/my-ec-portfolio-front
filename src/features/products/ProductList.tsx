@@ -11,6 +11,7 @@ import { useProducts } from './Hooks/useProducts';
 import { useBreakpoint } from '../../Hooks/useBreakpoint';
 import Pagination from '../../components/Pagination';
 import { FIRST_PAGE } from '../../constants/pagination';
+import { AxiosError } from 'axios';
 
 const ProductList = () => {
   const [page, setPage] = useState(FIRST_PAGE);
@@ -124,7 +125,11 @@ const ProductList = () => {
 
       {isError && (
         <ErrorDisplay
-          message={error instanceof Error ? error.message : '不明なエラーです'}
+          message={
+            error instanceof AxiosError && error.response?.data?.message
+              ? error.response.data.message
+              : '不明なエラーです'
+          }
           onRetry={handleRetry}
         />
       )}

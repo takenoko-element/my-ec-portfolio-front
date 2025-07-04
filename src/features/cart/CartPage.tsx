@@ -4,6 +4,7 @@ import type { CartItem } from '../../types';
 import toast from 'react-hot-toast';
 import CartItemRow from './CartItemRow';
 import { useAuth } from '../auth/AuthContext';
+import { AxiosError } from 'axios';
 
 export const CartPage = () => {
   const { user } = useAuth();
@@ -18,7 +19,12 @@ export const CartPage = () => {
   const handleClearCart = () => {
     clearCart(undefined, {
       onSuccess: () => toast.success('カートを空にしました。'),
-      onError: (error: Error) => toast.error(error.message),
+      onError: (error) => {
+        console.error('カートのクリアに失敗:', error);
+        const errorMessage =
+          error.response?.data?.message || 'カートのクリアに失敗しました。';
+        toast.error(errorMessage);
+      },
     });
   };
 
@@ -28,8 +34,8 @@ export const CartPage = () => {
 
   if (isError) {
     const errorMessage =
-      cartError instanceof Error
-        ? cartError.message
+      cartError instanceof AxiosError && cartError.response?.data?.message
+        ? cartError.response.data.message
         : '不明なエラーが発生しました。';
     return (
       <div className="text-center py-10 text-red-600">

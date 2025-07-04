@@ -46,7 +46,12 @@ export const useAddToCartHandler = (): UseAddToCartHandlerReturn => {
       await toast.promise(promise, {
         loading: 'カートに追加中...',
         success: <b>{`${product.title}をカートに追加しました！`}</b>,
-        error: (err) => <b>{err || 'カートへの追加に失敗しました。'}</b>,
+        error: (error) => {
+          const errorMessage = error.response?.data?.message
+            ? error.response.data.message
+            : 'カートへの追加に失敗しました。';
+          return <b>{errorMessage}</b>;
+        },
       });
     } catch (error) {
       console.error(

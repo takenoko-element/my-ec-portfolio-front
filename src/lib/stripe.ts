@@ -6,4 +6,6 @@ if (!stripePublicKey) {
   throw new Error('Stripe public key is not set');
 }
 
-export const stripePromise = loadStripe(stripePublicKey);
+export const stripePromise = loadStripe(stripePublicKey, {
+  locale: 'ja',
+});
