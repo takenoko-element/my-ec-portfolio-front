@@ -21,7 +21,7 @@ interface ProductFilters {
 const fetchProducts = async ({
   queryKey,
 }: {
-  queryKey: (string | ProductFilters)[];
+  queryKey: [string, ProductFilters];
 }): Promise<ProductsApiResponse> => {
   const [_key, filters] = queryKey;
 
