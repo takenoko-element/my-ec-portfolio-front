@@ -1,6 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import AddToCartButton from '../cart/AddToCartButton';
 import { useProduct } from './Hooks/useProducts';
+import { AxiosError } from 'axios';
 
 export default function ProductDetailPage() {
   const { productId } = useParams<{ productId: string }>();
@@ -10,9 +11,13 @@ export default function ProductDetailPage() {
     return <div className="text-2xl text-center">ローディング中...</div>;
   }
   if (isError) {
+    const errorMessage =
+      error instanceof AxiosError && error.response?.data?.message
+        ? error.response.data.message
+        : '商品情報の読み込みに失敗しました。';
     return (
       <div className="text-2xl text-center text-red-700">
-        <p>エラー: {error.message || '商品情報の読み込みに失敗しました。'}</p>
+        <p>エラー: {errorMessage}</p>
         <Link to="/">商品一覧へ戻る</Link>
       </div>
     );

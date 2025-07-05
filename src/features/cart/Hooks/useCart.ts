@@ -2,6 +2,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { User } from 'firebase/auth';
 import apiClient from '../../../lib/axios';
 import type { CartItem } from '../../../types';
+import { AxiosError } from 'axios';
+import type { ApiErrorData } from '../../../types/apiErrorData';
 
 // GET /cart- カート情報の取得
 const fetchCart = async (): Promise<CartItem[]> => {
@@ -10,7 +12,7 @@ const fetchCart = async (): Promise<CartItem[]> => {
 };
 
 export const useCart = (user: User | null) => {
-  return useQuery({
+  return useQuery<CartItem[], AxiosError<ApiErrorData>>({
     queryKey: ['cart'],
     queryFn: fetchCart,
     enabled: !!user,
@@ -31,7 +33,11 @@ const addToCart = async ({
 
 export const useAddToCart = () => {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useMutation<
+    CartItem,
+    AxiosError<ApiErrorData>,
+    { productId: number; quantity?: number }
+  >({
     mutationFn: addToCart,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cart'] });
@@ -53,7 +59,11 @@ const updateItemQuantity = async ({
 
 export const useUpdateItemQuantity = () => {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useMutation<
+    CartItem,
+    AxiosError<ApiErrorData>,
+    { cartItemId: number; quantity: number }
+  >({
     mutationFn: updateItemQuantity,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cart'] });
@@ -68,7 +78,7 @@ const removeItemFromCart = async (cartItemId: number) => {
 
 export const useRemoveItemFromCart = () => {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useMutation<void, AxiosError<ApiErrorData>, number>({
     mutationFn: removeItemFromCart,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cart'] });
@@ -83,7 +93,7 @@ const clearCart = async () => {
 
 export const useClearCart = () => {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useMutation<void, AxiosError<ApiErrorData>, void>({
     mutationFn: clearCart,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cart'] });

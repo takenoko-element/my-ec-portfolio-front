@@ -19,8 +19,13 @@ const CartItemRow = ({ item }: CartItemProps) => {
     updateQuantity(
       { cartItemId: item.id, quantity: item.quantity + 1 },
       {
-        onError: (error: Error) =>
-          toast.error(error.message || '数量の更新に失敗しました。'),
+        onError: (error) => {
+          console.error('数量の増加更新に失敗しました。', error);
+          const errorMessage = error.response?.data?.message
+            ? error.response.data.message
+            : '数量の増加更新に失敗しました。';
+          toast.error(errorMessage);
+        },
       },
     );
   };
@@ -29,8 +34,13 @@ const CartItemRow = ({ item }: CartItemProps) => {
       updateQuantity(
         { cartItemId: item.id, quantity: item.quantity - 1 },
         {
-          onError: (error: Error) =>
-            toast.error(error.message || '数量の更新に失敗しました。'),
+          onError: (error) => {
+            console.error('数量の減少更新に失敗しました。', error);
+            const errorMessage = error.response?.data?.message
+              ? error.response.data.message
+              : '数量の減少更新に失敗しました。';
+            toast.error(errorMessage);
+          },
         },
       );
     } else {
