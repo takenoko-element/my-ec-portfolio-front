@@ -1,6 +1,8 @@
 import { useStripe } from '@stripe/react-stripe-js';
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
+
 import { useCreateOrder } from '../orders/Hooks/useOrder';
 
 const OrderConfirmationStatus = () => {
@@ -28,30 +30,52 @@ const OrderConfirmationStatus = () => {
       console.error('client_secretが見つかりません。');
       setStatus('failed');
       setMessage('決済情報が正しくありません。');
+      toast.error('決済情報が取得できませんでした。');
       return;
     }
 
     // tripe.retrievePaymentIntent:
     // client_secretを使って、Stripeサーバーに「この決済、最終的にどうなりました？」と問い合わせる
-    // これで、決済の最終的なステータス（成功、失敗、処理中など）を取得する
-    stripe.retrievePaymentIntent(clientSecret).then(({ paymentIntent }) => {
-      switch (paymentIntent?.status) {
-        case 'succeeded':
-          setMessage('ご注文ありがとうございました！');
-          setStatus('succeeded');
-          createOrder();
-          break;
-        case 'processing':
-          setMessage('お支払いを処理中です。完了までしばらくお待ちください。');
-          setStatus('processing');
-          break;
-        default:
-          setMessage('お支払いに失敗しました。再度お試しください。');
+    // 決済の最終的なステータス（成功、失敗、処理中など）を取得する
+    stripe
+      .retrievePaymentIntent(clientSecret)
+      .then(({ paymentIntent, error: stripeError }) => {
+        // エラーハンドリング
+        if (stripeError) {
+          console.error(
+            'Stripe PaymentIntentの取得に失敗しました:',
+            stripeError,
+          );
           setStatus('failed');
-          break;
-      }
-    });
-  }, [stripe]);
+          setMessage(
+            stripeError.message ||
+              '決済結果の確認に失敗しました。再度お試しください。',
+          );
+          toast.error(
+            `決済結果の確認に失敗しました: ${stripeError.message || '不明なエラー'}`,
+          );
+        }
+
+        switch (paymentIntent?.status) {
+          case 'succeeded':
+            setMessage('ご注文ありがとうございました！');
+            setStatus('succeeded');
+            createOrder();
+            break;
+          case 'processing':
+            setMessage(
+              'お支払いを処理中です。完了までしばらくお待ちください。',
+            );
+            setStatus('processing');
+            break;
+          default:
+            setMessage('お支払いに失敗しました。再度お試しください。');
+            setStatus('failed');
+            toast.error('お支払いに失敗しました。');
+            break;
+        }
+      });
+  }, [stripe, createOrder]);
 
   const renderContent = () => {
     switch (status) {
@@ -81,6 +105,15 @@ const OrderConfirmationStatus = () => {
             >
               もう一度試す
             </Link>
+          </div>
+        );
+      case 'processing':
+        return (
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-yellow-600 mb-4">
+              決済処理中
+            </h2>
+            <p>{message}</p>
           </div>
         );
       default:
