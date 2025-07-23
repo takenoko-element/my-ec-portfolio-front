@@ -5,6 +5,7 @@ import {
 } from '@stripe/react-stripe-js';
 import type { StripePaymentElementOptions } from '@stripe/stripe-js';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 
 const CheckoutForm = () => {
   const stripe = useStripe();
@@ -17,9 +18,11 @@ const CheckoutForm = () => {
     e.preventDefault();
 
     if (!stripe || !elements) {
+      console.error('Stripe.js がロードされていません。');
       return;
     }
     setIsLoading(true);
+    setMessage(null);
 
     const { error } = await stripe.confirmPayment({
       // stripeライブラリからしかアクセスできない秘密箱のようなもの
@@ -31,11 +34,14 @@ const CheckoutForm = () => {
       },
     });
 
-    // この下のコードは、リダイレクトに失敗した場合や即時エラーが出た場合にのみ実行される
-    if (error.type === 'card_error' || error.type === 'validation_error') {
-      setMessage(error.message || '決済情報の入力に誤りがあります。');
-    } else {
-      setMessage('予期せぬエラーが発生しました。');
+    // これより下のコードは、リダイレクトに失敗した場合や即時エラーが出た場合にのみ実行される
+    if (error) {
+      if (error.type === 'card_error' || error.type === 'validation_error') {
+        setMessage(error.message || '決済情報の入力に誤りがあります。');
+      } else {
+        setMessage('予期せぬエラーが発生しました。');
+      }
+      toast.error(`決済に失敗しました: ${message}`);
     }
 
     setIsLoading(false);
