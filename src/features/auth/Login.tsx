@@ -7,12 +7,10 @@ import { ExclamationCircleIcon } from '@heroicons/react/24/solid';
 import { useLogin } from './Hooks/useAuthActions';
 
 const loginSchema = z.object({
-  email: z
-    .string()
-    .email({
-      message:
-        '正しいメールアドレスの形式で入力してください。(xxxxx@example.com)',
-    }),
+  email: z.string().email({
+    message:
+      '正しいメールアドレスの形式で入力してください。(xxxxx@example.com)',
+  }),
   password: z.string().min(1, { message: 'パスワードを入力してください。' }),
 });
 
@@ -36,7 +34,7 @@ const Login = () => {
       await login({ email: data.email, password: data.password });
       navigate('/');
     } catch (error) {
-      console.log('ログインに失敗しました。');
+      console.error('ログインに失敗しました：', error);
     }
   };
 

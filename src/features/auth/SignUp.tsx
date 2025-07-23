@@ -8,12 +8,10 @@ import { useSignUp } from './Hooks/useAuthActions';
 
 const signUpSchema = z
   .object({
-    email: z
-      .string()
-      .email({
-        message:
-          '正しいメールアドレスの形式で入力してください。(xxxxx@example.com)',
-      }),
+    email: z.string().email({
+      message:
+        '正しいメールアドレスの形式で入力してください。(xxxxx@example.com)',
+    }),
     password: z
       .string()
       .min(6, { message: 'パスワードは最低6文字以上で入力してください。' }),
@@ -46,7 +44,7 @@ const SignUp = () => {
       await signUp({ email: data.email, password: data.password });
       navigate('/');
     } catch (error) {
-      console.log('新規登録に失敗しました。');
+      console.error('新規登録に失敗しました：', error);
     }
   };
 
