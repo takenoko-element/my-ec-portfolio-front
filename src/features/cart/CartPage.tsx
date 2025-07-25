@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import CartItemRow from './CartItemRow';
 import { useAuth } from '../auth/AuthContext';
 import { AxiosError } from 'axios';
+import { UseCartTotalPrice } from './Hooks/useCartTotalPrice';
 
 export const CartPage = () => {
   const { user } = useAuth();
@@ -15,6 +16,7 @@ export const CartPage = () => {
     error: cartError,
   } = useCart(user);
   const { mutate: clearCart, isPending: isClearing } = useClearCart();
+  const { totalPrice, isPriceLoading, isPriceError } = UseCartTotalPrice();
 
   const handleClearCart = () => {
     clearCart(undefined, {
@@ -44,7 +46,12 @@ export const CartPage = () => {
     );
   }
 
-  if (!cartItems || cartItems.length === 0) {
+  if (
+    !cartItems ||
+    cartItems.length === 0 ||
+    totalPrice === null ||
+    parseFloat(totalPrice) === 0
+  ) {
     return (
       <div className="text-center py-10">
         <h2 className="text-2xl font-semibold mb-4">ショッピングカート</h2>
@@ -59,10 +66,16 @@ export const CartPage = () => {
     );
   }
 
-  const totalPrice = cartItems.reduce(
-    (sum, cartItem) => sum + cartItem.product.price * cartItem.quantity,
-    0,
-  );
+  if (isPriceLoading) {
+    return <div className="text-center py-10">合計金額を計算しています...</div>;
+  }
+  if (isPriceError) {
+    return (
+      <div className="text-center py-10 text-red-600">
+        合計金額の計算に失敗しました。
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto">
@@ -81,7 +94,7 @@ export const CartPage = () => {
       <div className="mt-8 p-4 bg-gray-50 rounded-lg shadow">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-semibold text-gray-800">合計金額:</h3>
-          <p className="text-2xl font-bold text-green-600">{`$ ${totalPrice.toFixed(2)}`}</p>
+          <p className="text-2xl font-bold text-green-600">{`$ ${totalPrice}`}</p>
         </div>
         <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3">
           <button
