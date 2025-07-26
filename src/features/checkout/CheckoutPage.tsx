@@ -12,6 +12,8 @@ import { UseCartTotalPrice } from '../cart/Hooks/useCartTotalPrice';
 const CheckoutPage = () => {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [loadingError, setLoadingError] = useState<string | null>(null);
+  const [isTestCardModalOpen, setIsTestCardModalOpen] = useState(false);
+  const [isBubbleVisible, setIsBubbleVisible] = useState(false);
 
   const { totalPrice, isPriceLoading, isPriceError } = UseCartTotalPrice();
 
@@ -42,6 +44,20 @@ const CheckoutPage = () => {
       createPaymentIntent();
     }
   }, [totalPrice, isPriceLoading, isPriceError, clientSecret]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsTestCardModalOpen(true);
+    }, 1000);
+    const bubbleTimer = setTimeout(() => {
+      setIsBubbleVisible(true);
+    }, 2000);
+
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(bubbleTimer);
+    };
+  }, []);
 
   // Elementsプロバイダーのオプション
   // clientSecretをElementsに渡すことで、Stripeがどの決済を扱えば良いか判断する
@@ -85,7 +101,30 @@ const CheckoutPage = () => {
 
   return (
     <div className="container mx-auto p-8">
-      <h1 className="text-2xl font-bold mb-6">お支払い情報の入力</h1>
+      <h1 className="text-2xl font-bold mb-6 inline-block relative">
+        お支払い情報の入力
+        {isBubbleVisible && (
+          <div className="absolute top-1/2 left-full transform -translate-y-1/2 ml-4 p-2 bg-pink-400 text-white text-xs rounded-lg shadow-lg z-10 hidden md:flex items-center whitespace-nowrap max-w-md">
+            <div className="absolute left-0 top-1/2 w-0 h-0 -ml-3 border-t-5 border-b-5 border-r-5 border-t-transparent border-b-transparent border-r-pink-400 transform -translate-y-1/2"></div>
+            <span>テスト環境です！</span>{' '}
+            <button
+              type="button"
+              onClick={() => setIsTestCardModalOpen(true)}
+              className="underline text-white font-semibold hover:text-blue-100 p-0 m-0 border-none bg-transparent ml-2"
+            >
+              テスト用カード情報を見る
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsBubbleVisible(false)}
+              className="ml-2 text-white hover:text-blue-100 text-lg font-bold p-0 m-0 border-none bg-transparent"
+              aria-label="閉じる"
+            >
+              &times;
+            </button>
+          </div>
+        )}
+      </h1>
       <div className="flex flex-col md:flex-row gap-8">
         <div className="md:w-2/3">
           {loadingError ? (
@@ -121,6 +160,46 @@ const CheckoutPage = () => {
           </div>
         </div>
       </div>
+      {isTestCardModalOpen && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl p-6 sm:p-8 max-w-lg w-full">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">
+              テスト用カード情報
+            </h2>
+            <p className="text-red-600 font-semibold mb-4">
+              これはテスト環境です。実際のカード番号は入力しないでください。
+            </p>
+            <p className="text-gray-700 mb-2">
+              以下のテスト用カード番号をご利用ください。
+            </p>
+            <div className="bg-gray-100 p-4 rounded-md mb-4 border border-gray-200">
+              <p className="font-bold text-lg text-gray-900 mb-2">
+                成功するカード番号:
+              </p>
+              <ul className="list-disc list-inside text-gray-700 space-y-1">
+                <li>**Visa:** 4242 4242 4242 4242</li>
+                <li>**Mastercard:** 5454 5454 5454 5454</li>
+                <li>**有効期限:** 任意の将来の月/年（例: 12/25）</li>
+                <li>**CVC:** 123</li>
+              </ul>
+              <p className="font-bold text-lg text-gray-900 mt-4 mb-2">
+                失敗するカード番号:
+              </p>
+              <ul className="list-disc list-inside text-gray-700 space-y-1">
+                <li>**残高不足:** 4000 0000 0000 0001</li>
+                <li>**カード拒否:** 4000 0000 0000 0002</li>
+                <li>その他Stripeドキュメントを参照</li>
+              </ul>
+            </div>
+            <button
+              onClick={() => setIsTestCardModalOpen(false)}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-150"
+            >
+              閉じる
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
