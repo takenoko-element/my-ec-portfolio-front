@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useAuth } from '../../auth/AuthContext';
 import { useCart } from './useCart';
+import { formatPriceJpy } from '../../../utils/formatters';
 
 interface UseCartTotalPriceReturn {
   totalPrice: string | null;
@@ -20,7 +21,7 @@ export const UseCartTotalPrice = (): UseCartTotalPriceReturn => {
       (sum, item) => sum + item.product.price * item.quantity,
       0,
     );
-    return sum.toFixed(2);
+    return formatPriceJpy(sum);
   }, [cartItems, isLoading, isError]);
 
   return {

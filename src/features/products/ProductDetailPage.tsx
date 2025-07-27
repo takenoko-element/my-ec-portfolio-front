@@ -2,6 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import AddToCartButton from '../cart/AddToCartButton';
 import { useProduct } from './Hooks/useProducts';
 import { AxiosError } from 'axios';
+import { formatPriceJpy } from '../../utils/formatters';
 
 export default function ProductDetailPage() {
   const { productId } = useParams<{ productId: string }>();
@@ -70,7 +71,7 @@ export default function ProductDetailPage() {
               </span>
             </div>
             <p className="text-3xl font-semibold text-green-600 mb-6">
-              価格: {product.price.toFixed(2)}
+              価格: ¥ {formatPriceJpy(product.price)}
             </p>
             <h2 className="text-lg font-semibold text-gray-700 mb-2">
               商品説明

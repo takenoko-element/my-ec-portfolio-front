@@ -12,6 +12,7 @@ import { useBreakpoint } from '../../Hooks/useBreakpoint';
 import Pagination from '../../components/Pagination';
 import { FIRST_PAGE } from '../../constants/pagination';
 import { AxiosError } from 'axios';
+import { formatPriceJpy } from '../../utils/formatters';
 
 const ProductList = () => {
   const [page, setPage] = useState(FIRST_PAGE);
@@ -167,7 +168,7 @@ const ProductList = () => {
                 カテゴリ: {product.category}
               </p>
               <p className="text-xl font-bold text-gray-900 mt-auto mb-3">
-                価格: ${product.price.toFixed(2)}
+                価格: ¥ {formatPriceJpy(product.price)}
               </p>
               <AddToCartButton product={product} />
             </div>

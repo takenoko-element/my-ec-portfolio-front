@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useRemoveItemFromCart, useUpdateItemQuantity } from './Hooks/useCart';
 import type { CartItem } from '../../types';
+import { formatPriceJpy } from '../../utils/formatters';
 
 interface CartItemProps {
   item: CartItem;
@@ -77,7 +78,7 @@ const CartItemRow = ({ item }: CartItemProps) => {
           </Link>
         </h3>
         <p className="text-sm text-gray-500 mb-2">
-          単価: ${item.product.price.toFixed(2)}
+          単価: ¥ {formatPriceJpy(item.product.price)}
         </p>
       </div>
       <div className="flex items-center my-2 sm:my-0 sm:mx-6">
@@ -108,7 +109,7 @@ const CartItemRow = ({ item }: CartItemProps) => {
         </button>
       </div>
       <p className="font-semibold text-gray-800 w-24 text-center sm:text-right my-2 sm:my-0">
-        ${(item.product.price * item.quantity).toFixed(2)}
+        ¥ {formatPriceJpy(item.product.price * item.quantity)}
       </p>
       <button
         onClick={() => handleRemoveItem()}
