@@ -94,7 +94,7 @@ export const CartPage = () => {
       <div className="mt-8 p-4 bg-gray-50 rounded-lg shadow">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-semibold text-gray-800">合計金額:</h3>
-          <p className="text-2xl font-bold text-green-600">{`$ ${totalPrice}`}</p>
+          <p className="text-2xl font-bold text-green-600">{`¥ ${totalPrice}`}</p>
         </div>
         <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3">
           <button

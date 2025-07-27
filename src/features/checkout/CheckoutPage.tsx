@@ -152,11 +152,11 @@ const CheckoutPage = () => {
           </h2>
           <div className="flex justify-between items-center border-b pb-3 mb-3">
             <p className="text-gray-600">小計</p>
-            <p className="font-medium text-gray-800">${totalPrice}</p>
+            <p className="font-medium text-gray-800">¥ {totalPrice}</p>
           </div>
           <div className="flex justify-between items-center pt-3 mt-3 border-t border-gray-200">
             <p className="text-lg font-bold text-gray-800">合計</p>
-            <p className="text-2xl font-bold text-green-600">${totalPrice}</p>
+            <p className="text-2xl font-bold text-green-600">¥ {totalPrice}</p>
           </div>
         </div>
       </div>

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useOrders } from './Hooks/useOrder';
 import { AxiosError } from 'axios';
+import { formatPriceJpy } from '../../utils/formatters';
 
 const OrderHistoryPage = () => {
   const { data: orders, isLoading, isError, error } = useOrders();
@@ -40,7 +41,7 @@ const OrderHistoryPage = () => {
                 <div>
                   <p className="text-sm text-gray-500">合計金額</p>
                   <p className="font-bold text-xl text-gray-800">
-                    {order.totalPrice.toLocaleString()}
+                    ¥ {formatPriceJpy(order.totalPrice)}
                   </p>
                 </div>
                 <div className="text-sm text-gray-500">
@@ -63,7 +64,7 @@ const OrderHistoryPage = () => {
                         {item.product.title}
                       </Link>
                       <p className="text-sm text-gray-600">
-                        ¥{item.price.toLocaleString()} x {item.quantity}点
+                        ¥ {formatPriceJpy(item.price)} x {item.quantity}点
                       </p>
                     </div>
                   </li>
